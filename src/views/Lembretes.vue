@@ -52,21 +52,44 @@
 
         <!--Lembretes //////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-->
         <v-card-text>
-          <v-card class="font-size: 16px font-weight-black text-uppercase black--text rounded-xl" color="#81D4FA" dark max-width="400" elevation="13" rounded-lg rounded-t-0>
+          <v-card class="" color="#81D4FA" dark max-width="400" elevation="13" rounded-lg rounded-t-0>
             <v-card-title class="light-blue lighten-2 pa-3"><span class="text-h6 font-weight-light">Pagar o fornecedor</span></v-card-title>
-            <v-card-text color="#212121" class="black--text text-h5 font-weight-bold mt-2">
+            <v-card-text color="#212121" class="text-h5 font-weight-bold mt-2">
               "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
             </v-card-text>
             <v-card-actions>
               <v-list-item class="grow">
                 <v-list-item-content>
                   <v-list-item-title>
-                    <v-chip class="ma-2" color="#FFC400" label>
+                    <v-chip class="ma-2" color="#4FC3F7" label>
                       <v-icon left>mdi-account-circle-outline</v-icon>John Leider
                     </v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
-                <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir" icon color="#FFC400" class="pa-5">
+                <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir" icon color="white" class="pa-5">
+                  <v-icon fab dark class="mr-1 pa-3" large>mdi-check-bold</v-icon>
+                </v-btn>
+              </v-list-item>
+            </v-card-actions>
+          </v-card>
+
+
+          <v-card class="" color="#81D4FA" dark max-width="400" elevation="13">
+            <v-card-title class="light-blue lighten-2 pa-3"><span class="text-h6 font-weight-light">Pagar o
+                fornecedor</span></v-card-title>
+            <v-card-text color="#212121" class="text-h5 font-weight-bold mt-2">
+              "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
+            </v-card-text>
+            <v-card-actions>
+              <v-list-item class="grow">
+                <v-list-item-content>
+                  <v-list-item-title>
+                    <v-chip class="ma-2" color="#4FC3F7" label>
+                      <v-icon left>mdi-account-circle-outline</v-icon>John Leider
+                    </v-chip>
+                  </v-list-item-title>
+                </v-list-item-content>
+                <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir" icon color="white" class="pa-5">
                   <v-icon fab dark class="mr-1 pa-3" large>mdi-check-bold</v-icon>
                 </v-btn>
               </v-list-item>
