@@ -50,7 +50,8 @@
             >Usuário ou senha inválidos.</v-alert>
             <v-btn class="ma-2" outlined color="white" @click="reset">Cancelar</v-btn>
             <v-btn outlined color="primary" @click="login()" >Login</v-btn><br>
-            <v-btn text color="success" class="ml-2 text-decoration-underline" @click="registerValid = true, loginValid = false">Registrar</v-btn>
+            <v-btn text color="success" class="text-decoration-underline" @click="registerValid = true, loginValid = false">Registrar</v-btn><br>
+            <v-btn text color="primaryy" class="text-decoration-underline" @click="test()">Recuperar senha</v-btn>
             </v-form>
           </v-col>
           </v-row>
@@ -73,7 +74,7 @@
           <v-row class="pa-5">
           <v-col>
             <v-form>
-              <v-text-field outlined color="success" label="Nome da empresa" v-model="user.nome"></v-text-field>
+              <v-text-field outlined color="success" label="Nome da loja" v-model="user.nome"></v-text-field>
               <v-text-field outlined color="success" label="Email" v-model="user.email"></v-text-field>
               <v-text-field outlined color="success" label="CNPJ" v-model="user.cnpj"></v-text-field>
               <v-text-field 
@@ -209,12 +210,15 @@ export default {
     },
     async registrarPerfil(){
       this.uid = fb.auth.currentUser.uid;
-      await fb.perfilCollection.add({            
+      const res = await fb.perfilCollection.add({            
         owner: this.uid,
         nomeEmpresa: this.user.nome,
-        email: this.user.email,
         CNPJ: this.user.cnpj,
         });
+        const idPerfil = res.id
+        await fb.perfilCollection.doc(idPerfil).update({
+          idPerfil: idPerfil,
+      });
         this.user = {}
     }
   }

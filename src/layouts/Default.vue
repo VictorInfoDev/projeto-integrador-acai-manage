@@ -135,11 +135,13 @@ export default {
       this.uid = fb.auth.currentUser.uid;
       this.infos = [];
       const logTasks = await fb.perfilCollection.where("owner","==",this.uid).get();
+      const user = fb.auth.currentUser;
+      const email = user.email;
         for (const doc of logTasks.docs) {
           this.infos.push({
             nome: doc.data().nomeEmpresa,
             cnpjMenu: doc.data().CNPJ,
-            emailMenu: doc.data().email
+            emailMenu: email
             })
           }
     }
