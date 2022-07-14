@@ -51,7 +51,7 @@
             <v-btn class="ma-2" outlined color="white" @click="reset">Cancelar</v-btn>
             <v-btn outlined color="primary" @click="login()" >Login</v-btn><br>
             <v-btn text color="success" class="text-decoration-underline" @click="registerValid = true, loginValid = false">Registrar</v-btn><br>
-            <v-btn text color="primaryy" class="text-decoration-underline" @click="test()">Recuperar senha</v-btn>
+            <v-btn text color="primaryy" class="text-decoration-underline" @click="dialogRecSenha = true">Recuperar senha</v-btn>
             </v-form>
           </v-col>
           </v-row>
@@ -111,14 +111,50 @@
           </v-card>
         </v-container>
       </v-container>
+      <v-dialog v-model="dialogRecSenha" max-width="500">
+        <v-card v-for="email in infos" :key="email.id">
+          <v-card-title>Digite o e-mail da sua conta:</v-card-title>
+          <v-card-text>
+            <v-text-field
+              color="success"
+              v-model="email.emailRec"
+              label="E-mail"
+            ></v-text-field>
+            <v-alert type="warning"
+            v-model="alertEmailRecError"
+            dismissible
+            transition="scale-transition"
+            >
+              Digite um e-mail válido.
+            </v-alert>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="dialogRecSenha = false, email.emailRec = '' ">Cancelar</v-btn>
+            <v-btn class="success" @click="sendEmaiLRec(email.emailRec)">Enviar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-alert
+        max-width="500"
+        v-model="alertEmailRec"
+        transition="scale-transition"
+        dismissible
+        class="mt-5 ml-5"
+        type="success"
+        >
+          E-mail enviado com sucesso!
+      </v-alert>
   </v-app>
 </template>
 
 <script>
 import * as fb from '@/plugins/firebase'
+import { sendPasswordResetEmail, getAuth } from "firebase/auth";
 export default {
   data(){
     return{
+      alertEmailRecError: false,
       alertInvalidInfo: false,
       invalidInfo:false,
       loadingLogin: false,
@@ -128,6 +164,9 @@ export default {
       loginValid:true,
       registerValid:false,
       show: false,
+      dialogRecSenha: false,
+      alertEmailRec: false,
+      infos:[{email:null}],
       user:{email:'victoragostini2019@gmail.com',cnpj:null,nome:null,password:'minhacasa2'},
     }
   },
@@ -220,6 +259,22 @@ export default {
           idPerfil: idPerfil,
       });
         this.user = {}
+    },
+    async sendEmaiLRec(emailrec){
+        if(emailrec == null || emailrec == ''){
+          this.alertEmailRecError = true
+        }
+        else{
+        const auth = getAuth();
+        sendPasswordResetEmail(auth, emailrec)
+        .then(() => {
+          this.alertEmailRec = true;
+        })
+        .catch(() => {
+          alert("Erro ao enviar o e-mail.")
+        });
+        this.dialogRecSenha = false          
+        }
     }
   }
 }
