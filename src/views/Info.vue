@@ -205,7 +205,6 @@ export default {
       },
       async ResetEmail(email){
         const auth = getAuth();
-        alert(email)
         updateEmail(auth.currentUser, email).then(() => {
           this.emailRec2 = true
         }).catch(() => {
