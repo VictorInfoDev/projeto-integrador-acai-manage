@@ -34,10 +34,6 @@
               <v-container fluid full-width single-line>
                 <v-row align="center">
                   <v-col class="d-flex" cols="12" sm="6">
-                    <v-select :items="items" v-model="nomeDe" label="De" outlined>
-                    </v-select>
-                  </v-col>
-                  <v-col class="d-flex" cols="12" sm="6">
                     <v-select :items="items " v-model="nomePara" label="Para" outlined></v-select>
                   </v-col>
                 </v-row>
