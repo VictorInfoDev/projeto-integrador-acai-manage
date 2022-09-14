@@ -14,15 +14,14 @@
         <template>
           <v-expansion-panels>
             <v-expansion-panel
-              v-for="(item,i) in 5"
-              :key="i"
+            v-for="comanda of quadroComandas" :key="comanda.id"
             >
               <v-expansion-panel-header class="text-h5">
-                Item
+                {{ comanda.nome }}
               </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              <v-divider></v-divider>
+              <v-expansion-panel-content class="mt-5">
+                {{ comanda.desc }}                
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
@@ -41,14 +40,33 @@
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
-      <v-dialog v-model="dialogVenda">
-        <v-card>
+      <v-dialog v-model="dialogVenda" persistent max-width="700px">
+        <v-card class="">
           <v-card-title class="success white--text text-h5">
-            <v-icon class="mr-2" color="white">mdi-plus</v-icon> Pedido
+            <v-icon class="mr-2" color="white">mdi-clipboard-edit-outline</v-icon> Pedido
           </v-card-title>
-          <v-card-text>
-
+          <v-card-text class="">
+              <v-row class="mt-5">
+                <v-col cols="12" sm="12">
+                  <v-text-field
+                    color="success"
+                    label="Nome do pedido"
+                    outlined
+                  ></v-text-field>
+                  <v-textarea
+                    solo
+                    name="input-7-4"
+                    label="Descrição do pedido"
+                    color="success"
+                  ></v-textarea>
+                </v-col>
+              </v-row>
           </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn @click="dialogVenda = false">Cancelar</v-btn>
+            <v-btn class="ml-3 success">Criar</v-btn>
+          </v-card-actions>
         </v-card>
       </v-dialog>
   </v-app>
@@ -62,12 +80,8 @@ export default {
     data(){
         return{
           dialogVenda: false,
-          btnADD: true,
-          selectedItem: 1,
-          items: [
-            { text: 'Super Copo' },
-            { text: 'Super Copo' },
-            { text: 'Super Copo' },
+          quadroComandas: [
+            {nome: "mesa 01", desc:"pedido"}
           ],
         }
     },
