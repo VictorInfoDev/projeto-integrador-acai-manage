@@ -1,6 +1,5 @@
 <template>
     <v-app>
-          <div class="container">
             <div class="pa-5">
             <div><span class="text-h3"><strong>Bem vindo</strong></span></div>
             <div class="my-2 text-h6" v-show="date" style="color:gray;padding-left:3px;"><v-icon class="mr-2">mdi-calendar-blank</v-icon>{{ date }}</div>
@@ -29,7 +28,6 @@
             <span style="color:gray;margin-left:10px;">- Theodore Roosevelt</span>
             </v-alert>
             </div>
-        </div>
     </v-app>
 </template>
 <script>
