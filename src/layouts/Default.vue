@@ -2,38 +2,53 @@
   <v-app>
     <!-- bar-top -->
     <div>
-    <v-app-bar app v-for="info in infos" :key="info.id" color="#550953">
-      <v-app-bar-nav-icon @click.stop="sidebar = !sidebar" color="success"></v-app-bar-nav-icon>
-      <span style="font-size:25px;" class="white--text">{{  info.nome  }}</span>
-      <v-spacer></v-spacer> 
-      <!-- menu -->
-      <v-menu
-      transition="slide-y-transition"
-      bottom
-      >
-      <template v-slot:activator="{ on, attrs }"><v-icon v-bind="attrs" v-on="on" class="mr-5" color="success">mdi-store-cog</v-icon></template>
-      <v-list class="success">
-        <v-list-item class="text-center white--text">
-          <v-list-item-title class="text-h5">{{  info.nome  }}</v-list-item-title>
-        </v-list-item>
-      </v-list> 
-      <v-list>
-        <v-list-item class="">
-          <v-list-item-title class=""><strong>Email: </strong>{{  info.emailMenu  }}</v-list-item-title>
-        </v-list-item>
-        <v-list-item class="">
-          <v-list-item-title class=""><strong>CNPJ: </strong>{{  info.cnpjMenu  }}</v-list-item-title>
-        </v-list-item>
-        <v-list-item class="" to="/Info">
-          <v-list-item-title class=""><v-icon class="mr-2">mdi-cog</v-icon>Configurações</v-list-item-title>
-        </v-list-item>
-        <v-divider></v-divider>
-        <v-list-item class="text-center" to="/login">
-          <v-list-item-title class="error--text text-h6">Sair</v-list-item-title>
-        </v-list-item>
-      </v-list> 
-      </v-menu>
-    </v-app-bar>
+      <v-app-bar app v-for="info in infos" :key="info.id" color="#550953">
+        <v-app-bar-nav-icon @click.stop="sidebar = !sidebar" color="success"></v-app-bar-nav-icon>
+        <span class="white--text"><h2>{{ info.nome }}</h2></span>
+          <row>
+            <v-tabs height="62" class="" v-model="tab" background-color="#550953" centered dark icons-and-text>
+            <v-tabs-slider></v-tabs-slider>
+            <v-tab to="/"><v-icon>mdi-home</v-icon></v-tab>
+            
+            <v-tab to="/Venda"><v-icon>mdi-basket-unfill</v-icon></v-tab>
+
+            <v-tab to="/Produtos"><v-icon>mdi-basket-plus</v-icon></v-tab>
+
+            <v-tab to="/Lembretes"><v-icon>mdi-clipboard-outline</v-icon></v-tab>
+
+            <v-tab to="/Info"><v-icon>mdi-store-cog</v-icon></v-tab>
+          </v-tabs>
+          </row>
+        <v-spacer></v-spacer>
+        <!-- menu -->
+        <v-menu transition="slide-y-transition" bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" class="mr-5" color="success">mdi-store-cog</v-icon>
+          </template>
+          <v-list class="success">
+            <v-list-item class="text-center white--text">
+              <v-list-item-title class="text-h5">{{ info.nome }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+          <v-list>
+            <v-list-item class="">
+              <v-list-item-title class=""><strong>Email: </strong>{{ info.emailMenu }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item class="">
+              <v-list-item-title class=""><strong>CNPJ: </strong>{{ info.cnpjMenu }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item class="" to="/Info">
+              <v-list-item-title class="">
+                <v-icon class="mr-2">mdi-cog</v-icon>Configurações
+              </v-list-item-title>
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item class="text-center" to="/login">
+              <v-list-item-title class="error--text text-h6">Sair</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-app-bar>
     </div>
     <!-- dialogSair -->
     <v-dialog v-model="dialogSair" persistent max-width="300px">
@@ -53,7 +68,8 @@
       </v-card>
     </v-dialog>
     <!-- drawer -->
-     <v-navigation-drawer app v-model="sidebar" dark v-for="info in infos" :key="info.id" color="#550953">
+    <v-navigation-drawer app v-model="sidebar" dark v-for="info in infos" :key="info.id" color="#550953">
+
       <v-list dense>
         <v-list-item>
           <v-list-item-action>
@@ -64,13 +80,15 @@
           </v-list-item-title>
         </v-list-item>
       </v-list>
+
       <v-list-item class="px-2">
         <v-list-item-avatar>
           <v-icon color="success">mdi-store</v-icon>
         </v-list-item-avatar>
-        <v-list-item-content class="success--">{{  info.nome  }}</v-list-item-content>
+        <v-list-item-content class="success--">{{ info.nome }}</v-list-item-content>
       </v-list-item>
       <v-divider></v-divider>
+
       <v-list>
         <v-list-item v-for="item of items" :key="item.title" link :to="item.to">
           <v-list-item-icon>
@@ -78,6 +96,7 @@
           </v-list-item-icon>
           <v-list-item-content>{{ item.title }}</v-list-item-content>
         </v-list-item>
+
         <v-list-item @click="sairUser()">
           <v-list-item-icon>
             <v-icon color="error">mdi-exit-to-app</v-icon>
@@ -86,19 +105,14 @@
             Sair
           </v-list-item-content>
         </v-list-item>
+
       </v-list>
       <div class="ma-5">
-      <v-switch
-        class="nightMode"
-        v-model="$vuetify.theme.dark"
-        hint="Descanse um pouco seus olhos."
-        inset
-        label="Modo Escuro"
-        persistent-hint
-      ></v-switch>
+        <v-switch class="nightMode" v-model="$vuetify.theme.dark" hint="Descanse um pouco seus olhos." inset
+          label="Modo Escuro" persistent-hint></v-switch>
       </div>
     </v-navigation-drawer>
-    <v-main> 
+    <v-main>
       <router-view></router-view>
     </v-main>
 
@@ -107,13 +121,13 @@
 <script>
 import * as fb from '@/plugins/firebase'
 export default {
-  data(){
-    return{
-      menuUser:true,
-      nightMode:false,
+  data() {
+    return {
+      menuUser: true,
+      nightMode: false,
       dialogSair: false,
-      sidebar:false,
-      infos:[],
+      sidebar: false,
+      infos: [],
       items: [
         { title: "Home", icon: "mdi-home", to: "/" },
         { title: "Vendas", icon: "mdi-basket-unfill", to: "/Venda" },
@@ -124,27 +138,26 @@ export default {
 
     }
   },
-  mounted(){
+  mounted() {
     this.buscarInfo();
   },
   methods: {
-    sairUser(){
+    sairUser() {
       this.dialogSair = true
     },
-    async buscarInfo (){
+    async buscarInfo() {
       this.uid = fb.auth.currentUser.uid;
       this.infos = [];
-      const logTasks = await fb.perfilCollection.where("owner","==",this.uid).get();
-      const user = fb.auth.currentUser;
-      const email = user.email;
-        for (const doc of logTasks.docs) {
-          this.infos.push({
-            nome: doc.data().nomeEmpresa,
-            cnpjMenu: doc.data().CNPJ,
-            emailMenu: email
-            })
-          }
+      const logTasks = await fb.perfilCollection.where("owner", "==", this.uid).get();
+      for (const doc of logTasks.docs) {
+        this.infos.push({
+          nome: doc.data().nomeEmpresa,
+          cnpjMenu: doc.data().CNPJ,
+          emailMenu: doc.data().email
+        })
+      }
     }
   }
 }
 </script>
+

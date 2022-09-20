@@ -1,17 +1,21 @@
 <template>
   <v-app>
-    <div class="root"><img class="background" ref="background" src="../assets/tree.png"/></div>
-    <div class="pa-10">
-      <v-row>
-        <v-col>
-          <v-card class="pa-5" elevation="5" height="570px">
-            <v-card-title>Nome da empresa<v-spacer></v-spacer>
-              <v-btn @click="verificar()">verificar</v-btn>
-            </v-card-title>
+      <div class="pa-10">
+        <v-row>
+          <v-col>
+            <v-card class="pa-5" elevation="5" height="600">
+            <v-card-title>Nome da empresa</v-card-title>
             <v-card-subtitle>empresaemail@gmail.com</v-card-subtitle>
-            <v-card-text><b>CNPJ:</b>12345678901</v-card-text>
+            <v-card-text>
+                <b>CNPJ:</b>12345678901<br>
+                <v-btn @click="dialogInfo = true, buscarInfoEdit()" outlined class="mt-2">Editar</v-btn>
+            </v-card-text>
             <v-divider></v-divider>
-            <v-card class="text-center" color="white" outlined>
+            <v-card
+              class="text-center"
+              color="white"
+              outlined
+            >
               <v-card-text>
                 <div class="text-h4 black--text">
                   Últimas vendas
@@ -19,7 +23,14 @@
               </v-card-text>
               <v-card-text>
                 <v-sheet color="white" rounded>
-                  <v-sparkline :value="value" color="black" height="100" padding="24" stroke-linecap="round" smooth>
+                  <v-sparkline
+                    :value="value"
+                    color="black"
+                    height="100"
+                    padding="24"
+                    stroke-linecap="round"
+                    smooth
+                  >
                     <template v-slot:label="item">
                       R${{ item.value }}
                     </template>
@@ -27,135 +38,145 @@
                 </v-sheet>
               </v-card-text>
             </v-card>
-          </v-card>
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-card class="pa-5" elevation="5" height="570px">
+            </v-card>
+          </v-col>
+          <v-col cols="12" sm="6">
+          <v-card class="pa-5" elevation="5" height="600px">
             <v-card-title>Últimas vendas</v-card-title>
-            <v-simple-table fixed-header height="425px">
-              <template v-slot:default>
-                <thead>
-                  <tr>
-                    <th class="text-left">
-                      Nome pedido
-                    </th>
-                    <th class="text-left">
-                      Valor Total
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="item in desserts" :key="item.name">
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.calories }}</td>
-                  </tr>
-                </tbody>
-              </template>
-            </v-simple-table>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <!--Funcionários-->
-          <v-card class="pa-5" elevation="5">
-            <v-card-title class="indigo white--text text-h5">
-              Tabela de Funcionários
-            </v-card-title>
-            <v-row class="pa-4" justify="space-between">
-              <v-col cols="5">
-                <v-treeview :active.sync="active" :items="items" :load-children="fetchUsers" :open.sync="open"
-                  activatable color="warning" open-on-click transition>
-                  <template v-slot:prepend="{ item }">
-                    <v-icon v-if="!item.children">
-                      mdi-account
-                    </v-icon>
-                  </template>
-                </v-treeview>
-              </v-col>
-
-              <v-divider vertical></v-divider>
-
-              <v-col class="d-flex text-center">
-                <v-scroll-y-transition mode="out-in">
-                  <div v-if="!selected" class="text-h6 grey--text text--lighten-1 font-weight-light"
-                    style="align-self: center;">
-                    Selecione um funcionário
-                  </div>
-                  <v-card v-else :key="selected.id" class="pt-6 mx-auto" flat max-width="400">
-                    <v-card-text>
-                      <v-avatar v-if="avatar" size="88">
-                        <v-img :src="`https://avataaars.io/${avatar}`" class="mb-6"></v-img>
-                      </v-avatar>
-                      <h3 class="text-h5 mb-2">
-                        {{ selected.name }}
-                      </h3>
-                      <div class="blue--text mb-2">
-                        {{ selected.email }}
-                      </div>
-                      <div class="blue--text subheading font-weight-bold">
-                        {{ selected.username }}
-                      </div>
-                    </v-card-text>
-                    <v-divider></v-divider>
-                    <v-row class="text-left" tag="v-card-text">
-                      <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
-                        Company:
-                      </v-col>
-                      <v-col>{{ selected.company.name }}</v-col>
-                      <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
-                        Website:
-                      </v-col>
-                      <v-col>
-                        <a :href="`//${selected.website}`" target="_blank">{{ selected.website }}</a>
-                      </v-col>
-                      <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
-                        Phone:
-                      </v-col>
-                      <v-col>{{ selected.phone }}</v-col>
-                    </v-row>
-                  </v-card>
-                </v-scroll-y-transition>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-
-
-    </div>
-    <img class="foreground" ref="foreground" src="../assets/tree.png"/>
+              <v-simple-table
+                fixed-header
+                height="425px"
+              >
+                <template v-slot:default>
+                  <thead>
+                    <tr>
+                      <th class="text-left">
+                        Nome pedido
+                      </th>
+                      <th class="text-left">
+                        Valor Total
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="item in desserts"
+                      :key="item.name"
+                    >
+                      <td>{{ item.name }}</td>
+                      <td>{{ item.calories }}</td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+          </v-card></v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-card class="pa-5" elevation="5">
+              opa
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
+      <v-dialog v-model="dialogInfo" max-width="500">
+        <v-card v-for="Edit in Edits" :key="Edit.id">
+          <v-card-title class="dark"><v-icon class="mr-3">mdi-store-edit</v-icon>Editar informações</v-card-title>
+          <v-divider></v-divider>
+          <v-btn
+            block
+            elevation="2"
+            tile
+            class="success"
+            v-if="BtnEmailVerificado"
+            @click="verifiedEmail()"
+          >Verificar email</v-btn>
+          <v-alert
+            class="ma-6"
+            v-model="BtnEmailVerificado"
+            type="warning"
+          >Assim que verificar o e-mail faça o <router-link to="/login">login</router-link> novamente.</v-alert>
+          <div v-if="!BtnEmailVerificado" class="mt-5 success--text ml-5"><v-icon class="mr-3" color="success" large>mdi-checkbox-marked-circle-outline</v-icon>E-mail verificado!</div>
+          <v-card-text>
+            <v-text-field
+              v-model="Edit.nome"
+              label="Nome da loja"
+              filled  
+              class="mt-5"
+              :disabled="disabledEdit"
+            ></v-text-field>
+            <v-text-field
+              v-model="Edit.cnpj"
+              label="CNPJ"
+              :disabled="disabledEdit"
+            ></v-text-field>
+            <v-text-field
+              v-model="Edit.email"
+              label="E-mail"
+              :disabled="disabledEdit"
+            ></v-text-field>
+            <v-btn :disabled="disabledEdit" @click="ResetEmail(Edit.email)" text class="mt-5 mr-2 primary">Redefinir Email</v-btn>
+            <v-btn :disabled="disabledEdit" @click="ResetSenha()" text class="mt-5 warning">Redefinir senha</v-btn><br>
+            <div class="mt-3">Enviaremos um link de recuperação para o seu email, verifique a caixa de spam caso o e-mail não apareça na caixa de entrada.</div> 
+            <v-alert
+              v-model="emailRec"
+              transition="scale-transition"
+              dismissible
+              class="mt-5"
+              type="success"
+            >
+              E-mail enviado com sucesso!
+            </v-alert>
+            <v-alert
+              v-model="emailRec2"
+              transition="scale-transition"
+              dismissible
+              class="mt-5"
+              type="primary"
+            >
+              E-mail de cancelamento enviado!
+            </v-alert>
+            <v-alert
+              v-model="emailRec3"
+              transition="scale-transition"
+              dismissible
+              class="mt-5"
+              type="error"
+            >
+              Este e-mail já está em uso!
+            </v-alert>
+          </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn @click="dialogInfo = false">Cancelar</v-btn>
+              <v-btn :disabled="disabledEdit" @click="salvarInfoEdit(Edit.cnpj, Edit.nome, Edit.id)" class="ml-3 success">Confirmar</v-btn>
+            </v-card-actions>
+        </v-card>
+      </v-dialog>
   </v-app>
 </template>
 
 <script>
 import * as fb from '@/plugins/firebase'
-import { sendPasswordResetEmail, getAuth } from "firebase/auth";
-
-const avatars = [
-  '?accessoriesType=Blank&avatarStyle=Circle&clotheColor=PastelGreen&clotheType=ShirtScoopNeck&eyeType=Wink&eyebrowType=UnibrowNatural&facialHairColor=Black&facialHairType=MoustacheMagnum&hairColor=Platinum&mouthType=Concerned&skinColor=Tanned&topType=Turban',
-  '?accessoriesType=Sunglasses&avatarStyle=Circle&clotheColor=Gray02&clotheType=ShirtScoopNeck&eyeType=EyeRoll&eyebrowType=RaisedExcited&facialHairColor=Red&facialHairType=BeardMagestic&hairColor=Red&hatColor=White&mouthType=Twinkle&skinColor=DarkBrown&topType=LongHairBun',
-  '?accessoriesType=Prescription02&avatarStyle=Circle&clotheColor=Black&clotheType=ShirtVNeck&eyeType=Surprised&eyebrowType=Angry&facialHairColor=Blonde&facialHairType=Blank&hairColor=Blonde&hatColor=PastelOrange&mouthType=Smile&skinColor=Black&topType=LongHairNotTooLong',
-  '?accessoriesType=Round&avatarStyle=Circle&clotheColor=PastelOrange&clotheType=Overall&eyeType=Close&eyebrowType=AngryNatural&facialHairColor=Blonde&facialHairType=Blank&graphicType=Pizza&hairColor=Black&hatColor=PastelBlue&mouthType=Serious&skinColor=Light&topType=LongHairBigHair',
-  '?accessoriesType=Kurt&avatarStyle=Circle&clotheColor=Gray01&clotheType=BlazerShirt&eyeType=Surprised&eyebrowType=Default&facialHairColor=Red&facialHairType=Blank&graphicType=Selena&hairColor=Red&hatColor=Blue02&mouthType=Twinkle&skinColor=Pale&topType=LongHairCurly',
-]
-
-const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
-
+import { sendPasswordResetEmail, getAuth, sendEmailVerification, updateEmail } from "firebase/auth";
 export default {
-  data() {
-    return {
-      active: [],
-      avatar: null,
-      open: [],
-      users: [],
-      desserts: [
-        {
-          name: 'Frozen Yogurt',
-          calories: 159,
-        },
-      ],
-      value: [
+    data () {
+      return {
+        Edits: [],
+        dialogInfo: false,
+        emailRec: false,
+        emailRec2: false,
+        emailRec3: false,
+        BtnEmailVerificado: true,
+        StkEmailverificado: false,
+        disabledEdit: true,
+        desserts: [
+          {
+            name: 'Frozen Yogurt',
+            calories: 159, 
+          },
+        ],
+        value: [
         423,
         446,
         675,
@@ -163,77 +184,71 @@ export default {
         590,
         610,
         760,
-      ],
-    }
-  },
-
-  computed: {
-    items() {
-      return [
-        {
-          name: 'Pessoas',
-          children: this.users,
-        },
-      ]
+          ],
+      }
     },
-    selected() {
-      if (!this.active.length) return undefined
-
-      const id = this.active[0]
-
-      return this.users.find(user => user.id === id)
+    mounted(){
+      this.buscarInfoEdit();
     },
-  },
-
-  watch: {
-    selected: 'randomAvatar',
-  },
-
-  methods: {
-    async verificar() {
-      const auth = getAuth();
-      const user = fb.auth.currentUser;
-      const email = user.email;
-      sendPasswordResetEmail(auth, email)
+    methods:{
+      async ResetSenha(){
+        const auth = getAuth();
+        const user = fb.auth.currentUser;
+        const email = user.email;
+        sendPasswordResetEmail(auth, email)
         .then(() => {
-          alert('sim')
+          this.emailRec = true;
         })
         .catch(() => {
-          alert('nao')
+          
+        });
+      },
+      async ResetEmail(email){
+        const auth = getAuth();
+        updateEmail(auth.currentUser, email).then(() => {
+          this.emailRec2 = true
+        }).catch(() => {
+          this.emailRec3 = true
+        });
+      },
+    async buscarInfoEdit (){
+        this.Edits = [];
+        this.uid = fb.auth.currentUser.uid;
+        const logTasks = await fb.perfilCollection.where("owner","==",this.uid).get();
+        const auth = getAuth();
+        const user = auth.currentUser;
+        const email = user.email;
+        for (const doc of logTasks.docs) {
+          this.Edits.push({
+            nome: doc.data().nomeEmpresa,
+            cnpj: doc.data().CNPJ,
+            email: email,
+            id: doc.data().idPerfil
+          })
+        }
+        if (user !== null) {
+          this.BtnEmailVerificado = !user.emailVerified;
+          this.disabledEdit = this.BtnEmailVerificado;
+        }
+    },
+    async verifiedEmail (){
+      const auth = getAuth();
+      sendEmailVerification(auth.currentUser)
+        .then(() => {
+            this.emailRec = true;
         });
     },
-    async fetchUsers(item) {
-      await pause(1500)
-
-      return fetch('https://jsonplaceholder.typicode.com/users')
-        .then(res => res.json())
-        .then(json => (item.children.push(...json)))
-        .catch(err => console.warn(err))
-    },
-    randomAvatar() {
-      this.avatar = avatars[Math.floor(Math.random() * avatars.length)]
-    },
-  },
+      async salvarInfoEdit(cnpj, nome, id){
+          await fb.perfilCollection.doc(id).update({
+              nomeEmpresa: nome,
+              CNPJ: cnpj,
+        });
+          this.buscarInfoEdit();
+          this.dialogInfo = false;
+      },
+    }
 }
 </script>
 
 <style>
-img.background,
-img.foreground {
-  /* Fill background */
-  min-height: 100%;
-  min-width: 1024px;
-
-  /* Scale proportionately */
-  width: 100%;
-  height: auto;
-}
-
-img.background {
-  /* Positioning */
-  position: fixed;
-  top: 0;
-  left: 0;
-}
-
 </style>
