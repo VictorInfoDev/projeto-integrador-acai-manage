@@ -12,18 +12,20 @@
         <div class="text-h2 success--text mt-10">Comandas</div>
         <v-divider class="ma-5 ml-0"></v-divider>
         <template>
-          <v-expansion-panels>
-            <v-expansion-panel
-            v-for="comanda of quadroComandas" :key="comanda.id"
-            >
-              <v-expansion-panel-header class="text-h5">
+          <v-expansion-panels class="">
+            <v-expansion-panel v-for="comanda of quadroComandas" :key="comanda.id" class="grey lighten-3">
+              <v-expansion-panel-header disable-icon-rotate>
                 {{ comanda.nome }}
+                <template v-slot:actions>
+                  <v-icon color="">
+                    {{ comanda.icon }}
+                  </v-icon>
+                </template>
               </v-expansion-panel-header>
-              <v-divider></v-divider>
-              <v-expansion-panel-content class="mt-5">
-                {{ comanda.desc }}                
+              <v-expansion-panel-content>
+                {{ comanda.desc }}
               </v-expansion-panel-content>
-            </v-expansion-panel>
+          </v-expansion-panel>
           </v-expansion-panels>
         </template>
       </div>
@@ -81,7 +83,9 @@ export default {
         return{
           dialogVenda: false,
           quadroComandas: [
-            {nome: "mesa 01", desc:"pedido"}
+            {nome: "mesa 01", desc:"pedido", icon: "mdi-alert-circle"},
+            {nome: "mesa 02", desc:"pedido", icon: "mdi-check"},
+            {nome: "mesa 03", desc:"pedido", icon: "mdi-alert-circle"}
           ],
         }
     },
