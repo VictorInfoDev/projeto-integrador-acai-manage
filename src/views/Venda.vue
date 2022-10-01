@@ -12,19 +12,24 @@
         <div class="text-h2 success--text mt-10">Comandas</div>
         <v-divider class="ma-5 ml-0"></v-divider>
         <template>
-          <v-expansion-panels>
-            <v-expansion-panel
-            v-for="comanda of quadroComandas" :key="comanda.id"
-            >
-              <v-expansion-panel-header class="text-h5">
-                {{ comanda.nome }}
+        <v-card elevation="5">
+          <v-expansion-panels class="">
+            <v-expansion-panel v-for="comanda of quadroComandas" :key="comanda.id" >
+              <v-expansion-panel-header disable-icon-rotate>
+                <h2><strong class="primary--text">{{ comanda.nome }}</strong></h2>
+                <template v-slot:actions>
+                  <v-icon color="" @click="editPreferencia()">
+                    {{ comanda.icon }}
+                  </v-icon>
+                </template>
               </v-expansion-panel-header>
-              <v-divider></v-divider>
-              <v-expansion-panel-content class="mt-5">
-                {{ comanda.desc }}                
+              <v-expansion-panel-content class="">
+                <template>
+                </template>
               </v-expansion-panel-content>
-            </v-expansion-panel>
+          </v-expansion-panel>
           </v-expansion-panels>
+        </v-card>
         </template>
       </div>
       <v-btn
@@ -81,10 +86,17 @@ export default {
         return{
           dialogVenda: false,
           quadroComandas: [
-            {nome: "mesa 01", desc:"pedido"}
+            {nome: "mesa 01", icon: "mdi-alert-circle"},
+            {nome: "mesa 02", icon: "mdi-check"},
+            {nome: "mesa 03", icon: "mdi-alert-circle"}
           ],
         }
     },
+    methods: {
+      editPreferencia(){
+        alert("Olá")
+      }
+    }
 }
 </script>
 

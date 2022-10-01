@@ -5,8 +5,8 @@
       <v-app-bar app v-for="info in infos" :key="info.id" color="#550953">
         <v-app-bar-nav-icon @click.stop="sidebar = !sidebar" color="success"></v-app-bar-nav-icon>
         <span class="white--text"><h2>{{ info.nome }}</h2></span>
-          <row>
-            <v-tabs height="62" class="" v-model="tab" background-color="#550953" centered dark icons-and-text>
+          <row class="ml-5">
+            <v-tabs height="62" color="success" v-model="tab" background-color="#550953" centered dark icons-and-text>
             <v-tabs-slider></v-tabs-slider>
             <v-tab to="/"><v-icon>mdi-home</v-icon></v-tab>
             
@@ -120,6 +120,7 @@
 </template>
 <script>
 import * as fb from '@/plugins/firebase'
+import {getAuth} from "firebase/auth";
 export default {
   data() {
     return {
@@ -148,12 +149,15 @@ export default {
     async buscarInfo() {
       this.uid = fb.auth.currentUser.uid;
       this.infos = [];
+      const auth = getAuth();
+      const user = auth.currentUser;
+      const email = user.email;
       const logTasks = await fb.perfilCollection.where("owner", "==", this.uid).get();
       for (const doc of logTasks.docs) {
         this.infos.push({
           nome: doc.data().nomeEmpresa,
           cnpjMenu: doc.data().CNPJ,
-          emailMenu: doc.data().email
+          emailMenu: email
         })
       }
     }

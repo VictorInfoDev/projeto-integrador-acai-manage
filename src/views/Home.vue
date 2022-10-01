@@ -7,14 +7,13 @@
         <v-card outlined color="transparent" class="ml-6 mr-6 my-2" style="color:black;padding-left:3px;">
           <span elevation="5" class="text-h3"><strong elevation="5">Bem vindo</strong></span>
           <br>
-          <v-icon elevation="5" color="gray" class="mr-2">mdi-calendar-blank</v-icon>{{ date }}
+          <v-icon elevation="5" color="black" class="mr-2">mdi-calendar-blank</v-icon>{{ date }}
         </v-card>
       </div>
       <br>
       <br>
       <div class="ml-6 mr-6">
-        <v-alert outlined color="transparent" dense border="left" elevation="5" colored-border
-          class="font-weight-medium">
+        <v-alert dense border="left" elevation="5" colored-border class="font-weight-medium" color="primary">
           Este site foi desenvolvido por estudantes de TI do IFC com o objetivo de melhorar o gerenciamento de vendas
           para lojas de açaí, um sistema simples, prático e organizado para acelerar os processos de suas vendas,
           deixando você no total controle, contando com históricos, informações de venda e listagem de produtos.
@@ -22,7 +21,7 @@
       </div>
       <br>
       <div class="ml-6 mr-6">
-        <v-alert outlined color="transparent" colored-border elevation="5" border="left">
+        <v-alert colored-border elevation="5" border="left" color="success">
           <span class="text-h5"><strong>❝Faça o que você pode, com o que você tem, onde você estiver. ❞</strong></span>
           <br>
           <span style="color:gray;margin-left:10px;">- Theodore Roosevelt</span>
