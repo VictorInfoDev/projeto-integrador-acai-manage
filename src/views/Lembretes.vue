@@ -192,7 +192,7 @@
           </v-textarea>
           <v-container fluid full-width single-line>
             <v-row align="center">
-              <v-col class="d-flex" cols="12" sm="6">
+              <v-col class="d-flex" cols="12" sm="12">
                 <v-select
                   :items="items"
                   v-model="nomePara"
