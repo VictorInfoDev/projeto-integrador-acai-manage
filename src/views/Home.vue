@@ -75,7 +75,6 @@ export default {
     return {
       date: '',
       timerCount: '',
-      image: "@/assets/dog.png",
       links: [
         'Home',
         'About Us',

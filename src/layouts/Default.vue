@@ -27,7 +27,7 @@
           </template>
           <v-list class="success">
             <v-list-item class="text-center white--text">
-              <v-list-item-title class="text-h5">{{ info.nome }}</v-list-item-title>
+              <v-list-item-title class="text-h5"> </v-list-item-title>
             </v-list-item>
           </v-list>
           <v-list>
