@@ -6,61 +6,33 @@
         <v-alert outlined type="info" color="#81D4FA">Clique em <v-icon color="#81D4FA">mdi-card-plus-outline</v-icon> para criar seus lembretes.</v-alert>
       </div>
       <div class="text-h2 mt-10">Lembretes</div>
-      <v-card outlined class="mt-8">
-        <v-card-title></v-card-title>
-
+      <v-card outlined class="mt-5">
         <!--Lembretes //////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-->
-        <v-col>
-        <v-card elevation="8" class="ml-5 blue-grey lighten-4 rounded-xl" max-width="344">
-          <v-card-title class="mt-1">{{ nomeLembrete }}</v-card-title>
+        <v-row>
+        <v-col cols="12" sm="3" v-for="lembrete in lembretes" :key="lembrete.id">
+        <v-card elevation="8" class="ma-5 blue-grey lighten-4 rounded-xl" max-width="344">
+          <v-card-title class="mt-1 ml-2 black--text">{{ lembrete.nome }}</v-card-title>
           <v-card-subtitle>
             <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>
-              <v-icon left color="black">mdi-account-circle-outline</v-icon>{{ nomeCriador }}</v-chip>
-              </v-card-subtitle>
+              <v-icon left color="black">mdi-account-circle-outline</v-icon>{{ lembrete.destinatario }}</v-chip>
+          </v-card-subtitle>
           <v-card-actions>
-            <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir" icon color="" class="ml-3 pa-5">
-              <v-icon fab dark class="mr-1 pa-3" large>mdi-check-bold</v-icon>
+            <v-btn icon @click="show = !show" class="ml-1">
+              <v-icon color="black">{{show ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn icon @click="show = !show">
-              <v-icon>{{show ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon>
+            <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir" icon color="" class="ml-3 pa-5">
+              <v-icon color="black" fab dark class="mr-1 pa-3" large>mdi-check-bold</v-icon>
             </v-btn>
           </v-card-actions>
           <v-expand-transition>
             <div v-show="show">
-              <v-divider></v-divider>
-              <v-card-text>{{ descMensagem }}</v-card-text>
+              <v-card-text class="black--text">{{ lembrete.descricao }}</v-card-text>
             </div>
           </v-expand-transition>
         </v-card>
       </v-col>
-
-        <v-spacer></v-spacer>
-
-        <v-col>
-            <v-card elevation="8" class="ml-5 blue-grey lighten-4 rounded-xl" max-width="344">
-          <v-card-title class="mt-1">{{ nomeLembrete }}</v-card-title>
-          <v-card-subtitle>
-            <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>
-              <v-icon left color="black">mdi-account-circle-outline</v-icon>{{ nomeCriador }}</v-chip>
-              </v-card-subtitle>
-          <v-card-actions>
-            <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir" icon color="" class="ml-3 pa-5">
-              <v-icon fab dark class="mr-1 pa-3" large>mdi-check-bold</v-icon>
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="show = !show">
-              <v-icon>{{show ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon>
-            </v-btn>
-          </v-card-actions>
-          <v-expand-transition>
-            <div v-show="show">
-              <v-divider></v-divider>
-              <v-card-text>{{ descMensagem }}</v-card-text>
-            </div>
-          </v-expand-transition>
-        </v-card>
-        </v-col>
+    </v-row>
       </v-card>
     </div>
     <v-dialog v-model="dialogConcluir" persistent max-width="300px">
@@ -77,6 +49,11 @@
     <v-btn fixed fab large dark bottom right class="ma-5 light-blue lighten-2" @click="dialogLembrete = !dialogLembrete">
       <v-icon>mdi-card-plus-outline</v-icon>
     </v-btn>
+
+
+
+
+
     <!--JANELA DO LEMBRETE-->
     <v-dialog v-model="dialogLembrete" max-width="500px">
       <v-card>
@@ -92,12 +69,25 @@
           <v-text-field v-model="nomeLembrete" label="Nome lembrete" single-line full-width hide-details>
           </v-text-field>
           <v-divider></v-divider>
-          <v-textarea v-model="descMensagem" label="Mensagem" counter maxlength="260" full-width single-line prepend-icon="">
-          </v-textarea>
+          <v-textarea v-model="descricaoLembrete" label="Mensagem" counter maxlength="260" full-width single-line prepend-icon="">
+          </v-textarea>            
+          <v-container fluid full-width single-line>
+            <v-row align="center">
+              <v-col class="d-flex" cols="12" sm="12">
+                <v-select
+                  :items="items"
+                  v-model="destinatarioLembrete"
+                  label="Destinatário"
+                  outlined
+                ></v-select>
+              </v-col>
+            </v-row>
+          </v-container>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn class="mb-2" color=""  @click="reset(nomeLembrete, descMensagem, nomePara)">fechar</v-btn>
-            <v-btn flat class="light-blue lighten-2 mb-2" @click="salvarLembrete()">Criar</v-btn>
+            <v-btn class="mb-2" @click="dialogLembrete = false, resetForm()">fechar</v-btn>
+            <v-btn flat class="light-blue lighten-2 mb-2" @click="salvarLembretes()">Criar</v-btn>
+
           </v-card-actions>
         </v-form>
       </v-card>
@@ -106,38 +96,61 @@
 </template>
 
 <script>
-//import { db } from '../plugins/firebase';
-
-//import * as fb from '@/plugins/firebase'
+import * as fb from '@/plugins/firebase'
 export default {
   data() {
     return {
+      uid: "",
       show: false,
       valid: true,
       dialogLembrete: false,
       dialogConcluir: false,
       items: ["Gerente", "Dono", "Vendedor(a)"],
-      lembrete: [],
+      lembretes: [],
       nomeLembrete: '',
-      nomeCriador: "Adelar P.",
-      descMensagem: '',
+      descricaoLembrete: '',
+      destinatarioLembrete: '',
     };
   },
-
+  mounted() {
+    this.buscarLembretes();
+  },
   methods: {
-    async salvarLembrete(e){
+    async salvarLembretes() {
+      this.uid = fb.auth.currentUser.uid;
+      const res = await fb.lembretesCollection.add({
+          uid: this.uid,
+          nome_lembrete: this.nomeLembrete,
+          nome_destinatario: this.destinatarioLembrete,
+          descricao: this.descricaoLembrete,
+      });
+      const idLembreteAdd = res.id;
+        await fb.lembretesCollection.doc(idLembreteAdd).update({
+          ID_lembrete: idLembreteAdd,
+      });
+      this.resetForm();
+      this.buscarLembretes();
+      
+    },
 
-      e.preventDefault();
-
-      //console.log("Lembrete criado")
-
-      const data = {
-        nomeLembrete: this.nomeLembrete,
-        descMensagem: this.descMensagem,
+    async resetForm(){
+      this.nomeLembrete = ''
+      this.descricaoLembrete = ''
+      this.destinatarioLembrete = ''
+    },
+    async buscarLembretes() {
+      this.uid = fb.auth.currentUser.uid;
+      this.lembretes = [];
+      const logLembrete = await fb.lembretesCollection
+        .where("uid", "==", this.uid)
+        .get();
+      for (const doc of logLembrete.docs) {
+        this.lembretes.push({
+          nome: doc.data().nome_lembrete,
+          destinatario: doc.data().nome_destinatario,
+          descricao: doc.data().descricao,
+        });
       }
-
-      console.log(data);
-
     }
   },
 };

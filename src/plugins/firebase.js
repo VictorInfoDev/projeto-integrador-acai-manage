@@ -21,7 +21,7 @@ const classeCollection = db.collection('classificações')
 const produtosCollection = db.collection('produtos')
 const perfilCollection = db.collection('perfil')
 const pedidoItemsCollection = db.collection('pedidoItems')
-const lembretesCollection = db.collection('pedidoItems')
+const lembretesCollection = db.collection('lembretes')
 
 
 
