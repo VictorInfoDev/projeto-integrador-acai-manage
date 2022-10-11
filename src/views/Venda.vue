@@ -11,27 +11,35 @@
         </v-alert>
         <div class="text-h2 success--text mt-10">Comandas</div>
         <v-divider class="ma-5 ml-0"></v-divider>
-        <template>
-        <v-card elevation="5">
-          <v-expansion-panels class="">
-            <v-expansion-panel v-for="comanda of quadroComandas" :key="comanda.id" >
-              <v-expansion-panel-header disable-icon-rotate>
-                <h2><strong class="primary--text">{{ comanda.nome }}</strong></h2>
-                <template v-slot:actions>
-                  <v-icon color="" @click="editPreferencia()">
-                    {{ comanda.icon }}
-                  </v-icon>
-                </template>
-              </v-expansion-panel-header>
-              <v-expansion-panel-content class="">
-                <template>
-                </template>
-              </v-expansion-panel-content>
-          </v-expansion-panel>
-          </v-expansion-panels>
-        </v-card>
-        </template>
-      </div>
+          <v-row>
+            <v-col cols="12" sm="2" v-for="comanda in comandas" :key="comanda.id">
+                <v-hover v-slot="{ hover }">
+                  <v-card 
+                    height="" width="" class=""
+                    :elevation="hover ? 12 : 5"
+                    :class="{ 'on-hover': hover }"
+                    @click="test()"
+                  >
+                    <v-card-title class="success white--text">
+                      {{ comanda.nome }}
+                      <v-spacer></v-spacer>
+                      <v-icon
+                        left
+                        color="white"
+                      >
+                        {{ comanda.prioridade }}
+                      </v-icon>
+                    </v-card-title>
+                    <v-card-text class="mt-3">
+                      Horário de criação: <b>{{ comanda.hora }}</b><br>
+                      Data de criação: <b>{{ comanda.data }}</b>
+                    </v-card-text>
+                  </v-card>
+                </v-hover>
+              
+            </v-col>
+          </v-row>
+        </div>
       <v-btn
         color="success"
         fixed
@@ -70,7 +78,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn @click="dialogVenda = false">Cancelar</v-btn>
-            <v-btn class="ml-3 success">Criar</v-btn>
+            <v-btn @click="test()" class="ml-3 success">Criar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -85,16 +93,22 @@ export default {
     data(){
         return{
           dialogVenda: false,
-          quadroComandas: [
-            {nome: "mesa 01", icon: "mdi-alert-circle"},
-            {nome: "mesa 02", icon: "mdi-check"},
-            {nome: "mesa 03", icon: "mdi-alert-circle"}
-          ],
+          comandas:[
+            {nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star'},
+            {nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: ''}
+          ]
         }
     },
     methods: {
-      editPreferencia(){
-        alert("Olá")
+      test(){
+        var dataAtual = new Date();
+        var horas = dataAtual.getHours();
+        var minutos = dataAtual.getMinutes();
+        var dia = dataAtual.getDate();
+        var mes = (dataAtual.getMonth() + 1);
+        var ano = dataAtual.getFullYear();
+        alert(horas + ":" + minutos)
+        alert(dia + "/" + mes + "/" + ano)
       }
     }
 }

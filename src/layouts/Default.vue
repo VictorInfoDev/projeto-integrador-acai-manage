@@ -27,7 +27,7 @@
           </template>
           <v-list class="success">
             <v-list-item class="text-center white--text">
-              <v-list-item-title class="text-h5"> </v-list-item-title>
+              <v-list-item-title class="text-h5">{{ info.nome }}</v-list-item-title>
             </v-list-item>
           </v-list>
           <v-list>
@@ -37,6 +37,7 @@
             <v-list-item class="">
               <v-list-item-title class=""><strong>CNPJ: </strong>{{ info.cnpjMenu }}</v-list-item-title>
             </v-list-item>
+            <v-divider></v-divider>
             <v-list-item class="" to="/Info">
               <v-list-item-title class="">
                 <v-icon class="mr-2">mdi-cog</v-icon>Configurações
