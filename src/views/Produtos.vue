@@ -546,7 +546,7 @@ export default {
     //methods classse buscar********************************************************************************************
     async buscarClass() {
       this.uid = fb.auth.currentUser.uid;
-      this.items = ["Adicionais", "Copos"];
+      this.items = ["Copos", "Produtos"];
       const logTasks = await fb.classeCollection
         .where("uid", "==", this.uid)
         .get();

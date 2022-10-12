@@ -15,8 +15,6 @@
             <v-tab to="/Produtos"><v-icon>mdi-basket-plus</v-icon></v-tab>
 
             <v-tab to="/Lembretes"><v-icon>mdi-clipboard-outline</v-icon></v-tab>
-
-            <v-tab to="/Info"><v-icon>mdi-store-cog</v-icon></v-tab>
           </v-tabs>
           </row>
         <v-spacer></v-spacer>
