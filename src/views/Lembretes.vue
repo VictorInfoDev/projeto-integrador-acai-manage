@@ -16,6 +16,14 @@
               <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>
                 <v-icon left color="black">mdi-account-circle-outline</v-icon>{{ lembrete.destinatario }}
               </v-chip>
+
+              <!--hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh-->
+
+              <v-chip mall :ripple="false" link class="ma-1" color="black--text" outlined>
+                <v-icon left color="black">mdi-calendar-range</v-icon>{{ lembrete.data }}
+              </v-chip>
+
+
             </v-card-subtitle>
             <v-card-actions>
               <v-btn icon @click="show = !show" class="ml-1">
@@ -72,8 +80,8 @@
                   :items="items"
                   v-model="destinatarioLembrete"
                   label="Destinatário"
-                  outlined
-                ></v-select>
+                  outlined>
+                </v-select>
               </v-col>
             </v-row>
           </v-container>
@@ -84,6 +92,11 @@
 
           </v-card-actions>
         </v-form>
+        <v-card-subtitle>
+              <v-chip mall :ripple="false" link class="ma-1" color="black--text" outlined>
+                <v-icon left color="black">mdi-calendar-range</v-icon>{{ dataLembrete }}
+              </v-chip>
+            </v-card-subtitle>
       </v-card>
     </v-dialog>
   </v-app>
@@ -104,12 +117,15 @@ export default {
       nomeLembrete: '',
       descricaoLembrete: '',
       destinatarioLembrete: '',
+      ola: 'adelar',
+      dataLembrete: ((new Intl.DateTimeFormat('default', {dateStyle: 'short'}).format())),
     };
   },
   mounted() {
     this.buscarLembretes();
   },
   methods: {
+
     async salvarLembretes() {
       this.uid = fb.auth.currentUser.uid;
       const res = await fb.lembretesCollection.add({
@@ -117,6 +133,7 @@ export default {
           nome_lembrete: this.nomeLembrete,
           nome_destinatario: this.destinatarioLembrete,
           descricao: this.descricaoLembrete,
+          data_lembrete: this.dataLembrete,
       });
       const idLembreteAdd = res.id;
         await fb.lembretesCollection.doc(idLembreteAdd).update({
@@ -132,6 +149,7 @@ export default {
       this.nomeLembrete = ''
       this.descricaoLembrete = ''
       this.destinatarioLembrete = ''
+      this.dataLembrete = ''
     },
     async buscarLembretes() {
       this.uid = fb.auth.currentUser.uid;
@@ -144,9 +162,10 @@ export default {
           nome: doc.data().nome_lembrete,
           destinatario: doc.data().nome_destinatario,
           descricao: doc.data().descricao,
+          data: doc.data().data_lembrete,
         });
       }
-    }
+    },
   },
 };
 </script>
