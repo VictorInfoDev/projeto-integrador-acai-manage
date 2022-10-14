@@ -12,8 +12,9 @@
         <v-col cols="12" sm="3" v-for="lembrete in lembretes" :key="lembrete.id">
           <v-card elevation="8" class="ma-5 blue-grey lighten-4 rounded-xl" max-width="344">
             <v-card-title class="mt-1 ml-2 black--text">{{ lembrete.nome }}</v-card-title>
-            <v-card-subtitle>
-              <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>
+            <v-card-text class="black--text">{{ lembrete.descricao }}</v-card-text>
+
+            <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>
                 <v-icon left color="black">mdi-account-circle-outline</v-icon>{{ lembrete.destinatario }}
               </v-chip>
 
@@ -22,23 +23,11 @@
               <v-chip mall :ripple="false" link class="ma-1" color="black--text" outlined>
                 <v-icon left color="black">mdi-calendar-range</v-icon>{{ lembrete.data }}
               </v-chip>
-
-
-            </v-card-subtitle>
-            <v-card-actions>
-              <v-btn icon @click="show = !show" class="ml-1">
-                <v-icon color="black">{{show ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon>
-              </v-btn>
-              <v-spacer></v-spacer>
-              <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir" icon color="" class="ml-3 pa-5">
+              <v-card-actions>
+              <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir" icon color="" class="mr-3 pa-5">
                 <v-icon color="black" fab dark class="mr-1 pa-3" large>mdi-check-bold</v-icon>
               </v-btn>
             </v-card-actions>
-            <v-expand-transition>
-              <div v-show="show">
-                <v-card-text class="black--text">{{ lembrete.descricao }}</v-card-text>
-              </div>
-            </v-expand-transition>
           </v-card>
         </v-col>
       </v-row>
