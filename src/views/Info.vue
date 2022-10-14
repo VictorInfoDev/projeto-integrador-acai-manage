@@ -3,11 +3,11 @@
       <div class="pa-10">
         <v-row>
           <v-col>
-            <v-card class="pa-5" elevation="5" height="600">
-            <v-card-title>Nome da empresa</v-card-title>
-            <v-card-subtitle>empresaemail@gmail.com</v-card-subtitle>
+            <v-card class="pa-5" elevation="5" height="600" v-for="info in infos" :key="info.id">
+            <v-card-title>{{ info.nomeempresa }}</v-card-title>
+            <v-card-subtitle>{{ info.email }}</v-card-subtitle>
             <v-card-text>
-                <b>CNPJ:</b>12345678901<br>
+                <b>CNPJ:</b>{{ info.cnpj }}<br>
                 <v-btn @click="dialogInfo = true, buscarInfoEdit()" outlined class="mt-2">Editar</v-btn>
             </v-card-text>
             <v-divider></v-divider>
@@ -60,11 +60,11 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="item in desserts"
-                      :key="item.name"
+                      v-for="ultimas_vendas in vendas"
+                      :key="ultimas_vendas.name"
                     >
-                      <td>{{ item.name }}</td>
-                      <td>{{ item.calories }}</td>
+                      <td>{{ ultimas_vendas.name }}</td>
+                      <td>{{ ultimas_vendas.calories }}</td>
                     </tr>
                   </tbody>
                 </template>
@@ -162,6 +162,7 @@ import { sendPasswordResetEmail, getAuth, sendEmailVerification, updateEmail } f
 export default {
     data () {
       return {
+        infos: [],
         Edits: [],
         dialogInfo: false,
         emailRec: false,
@@ -170,7 +171,7 @@ export default {
         BtnEmailVerificado: true,
         StkEmailverificado: false,
         disabledEdit: true,
-        desserts: [
+        vendas: [
           {
             name: 'Frozen Yogurt',
             calories: 159, 
@@ -189,6 +190,7 @@ export default {
     },
     mounted(){
       this.buscarInfoEdit();
+      this.buscarInfoUser();
     },
     methods:{
       async ResetSenha(){
@@ -211,14 +213,29 @@ export default {
           this.emailRec3 = true
         });
       },
-    async buscarInfoEdit (){
-        this.Edits = [];
-        this.uid = fb.auth.currentUser.uid;
-        const logTasks = await fb.perfilCollection.where("owner","==",this.uid).get();
+    async buscarInfoUser(){
+      this.infos = [];
+      this.uid = fb.auth.currentUser.uid;
+        const logPerfilUser = await fb.perfilCollection.where("owner","==",this.uid).get();
         const auth = getAuth();
         const user = auth.currentUser;
         const email = user.email;
-        for (const doc of logTasks.docs) {
+        for (const doc of logPerfilUser.docs) {
+          this.infos.push({
+            nomeempresa: doc.data().nomeEmpresa,
+            cnpj: doc.data().CNPJ,
+            email: email,
+          })
+        }
+    },
+    async buscarInfoEdit (){
+        this.Edits = [];
+        this.uid = fb.auth.currentUser.uid;
+        const logInfoEdit = await fb.perfilCollection.where("owner","==",this.uid).get();
+        const auth = getAuth();
+        const user = auth.currentUser;
+        const email = user.email;
+        for (const doc of logInfoEdit.docs) {
           this.Edits.push({
             nome: doc.data().nomeEmpresa,
             cnpj: doc.data().CNPJ,

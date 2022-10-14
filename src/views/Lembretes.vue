@@ -1,18 +1,18 @@
 <template>
   <v-app>
     <div class="pa-5">
-      <div style=" border-left-style: solid; border-left-color: #81d4fa; border-left-width: 8px; padding-left: 10px;" class="text-h4 my-8">Crie seus lembretes aqui!</div>
+      <div style=" border-left-style: solid; border-left-color: gray; border-left-width: 8px; padding-left: 10px;" class="text-h4 my-8">Crie seus lembretes aqui!</div>
       <div style="color: gray" class="h5 mt-2 mb-4">
-        <v-alert outlined type="info" color="#81D4FA">Clique em <v-icon color="#81D4FA">mdi-card-plus-outline</v-icon> para criar seus lembretes.</v-alert>
+        <v-alert outlined type="info" color="dark">Clique em <v-icon color="">mdi-card-plus-outline</v-icon> para criar seus lembretes.</v-alert>
       </div>
       <div class="text-h2 mt-10">Lembretes</div>
       <v-card outlined class="mt-5">
         <!--Lembretes //////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-->
       <v-row>
         <v-col cols="12" sm="3" v-for="lembrete in lembretes" :key="lembrete.id">
-          <v-card elevation="8" class="ma-5 blue-grey lighten-4 rounded-xl" max-width="344">
-            <v-card-title class="mt-1 ml-2 black--text">{{ lembrete.nome }}</v-card-title>
-            <v-card-text class="black--text">{{ lembrete.descricao }}</v-card-text>
+          <v-card elevation="3" class="ma-5 blue-grey lighten-4" tile>
+            <v-card-title class="mt-1 black--text">{{ lembrete.nome }}</v-card-title>
+            <v-card-text fixed height="300px" class="black--text">{{ lembrete.descricao }}</v-card-text>
 
             <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>
                 <v-icon left color="black">mdi-account-circle-outline</v-icon>{{ lembrete.destinatario }}
@@ -43,14 +43,14 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <v-btn fixed fab large dark bottom right class="ma-5 light-blue lighten-2" @click="dialogLembrete = !dialogLembrete">
-      <v-icon>mdi-card-plus-outline</v-icon>
+    <!--Botao criação lembrete-->
+    <v-btn fixed fab large dark bottom right class="ma-5 blue-grey lighten-4" @click="dialogLembrete = !dialogLembrete">
+      <v-icon color="black">mdi-card-plus-outline</v-icon>
     </v-btn>
     <!--JANELA DO LEMBRETE-->
     <v-dialog v-model="dialogLembrete" max-width="500px">
       <v-card>
-        <v-card-title class="light-blue lighten-2 pa-5">
+        <v-card-title class="pa-5 grey darken-3">
           <v-icon color="white">mdi-text-box</v-icon>
           <span class="ml-2 white--text">Deixe seu lembrete</span>
           <v-spacer></v-spacer>
@@ -76,14 +76,14 @@
           </v-container>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn class="mb-2" @click="dialogLembrete = false, resetForm()">fechar</v-btn>
-            <v-btn flat class="light-blue lighten-2 mb-2" @click="salvarLembretes()">Criar</v-btn>
+            <v-btn class="mb-2 white black--text" @click="dialogLembrete = false, resetForm()">fechar</v-btn>
+            <v-btn flat dark class="mb-2" @click="salvarLembretes()">Criar</v-btn>
 
           </v-card-actions>
         </v-form>
         <v-card-subtitle>
-              <v-chip mall :ripple="false" link class="ma-1" color="black--text" outlined>
-                <v-icon left color="black">mdi-calendar-range</v-icon>{{ dataLembrete }}
+              <v-chip mall :ripple="false" link class="ma-1" color="" outlined>
+                <v-icon left color="">mdi-calendar-range</v-icon>{{ dataLembrete }}
               </v-chip>
             </v-card-subtitle>
       </v-card>
