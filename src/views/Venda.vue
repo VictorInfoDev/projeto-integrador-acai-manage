@@ -52,7 +52,7 @@
         bottom
         right
         class="ma-5"
-        @click="buscarProdutosVenda(), dialogVenda = true"
+        @click="criarComanda(),buscarProdutosVenda(), dialogVenda = true"
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
@@ -60,6 +60,7 @@
       <!-- Dialog Venda-->
       <v-dialog
         v-model="dialogVenda"
+        persistent
         fullscreen
         hide-overlay
         transition="dialog-bottom-transition"
@@ -73,17 +74,17 @@
             <v-btn
               icon
               dark
-              @click="dialogVenda = false"
+              @click="excluirComandaLog(),dialogVenda = false"
             >
               <v-icon>mdi-close</v-icon>
             </v-btn>
             <v-toolbar-title>Criação da comanda</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-checkbox
-              v-model="ex4"
+              v-model="comandaPrioridade"
               label="Prioridade"
               color="orange"
-              value="orange"
+              value="sim"
               hide-details
               class="mr-5"
             ></v-checkbox>
@@ -104,17 +105,19 @@
               <v-card elevation="0" class="ma-5">
                 <div><h2>Informações</h2></div>
                 <v-text-field
+                  v-model="nomeComanda"
                   label="Nome da comanda"
                   color="success"
                   maxlength="25"
                   counter
                 ></v-text-field>
                 <v-textarea
+                  v-model="descricaoComanda"
                   class="mt-3"
                   solo
                   name="input-7-4"
                   label="Descrição do pedido"
-                  maxlength="500"
+                  maxlength="250"
                   counter
                 ></v-textarea>
                 <div><h2>Produtos</h2></div>
@@ -139,11 +142,18 @@
                   <tbody>
                     <tr
                       v-for="produtoVenda in produtosVenda"
-                      :key="produtoVenda.name"
+                      :key="produtoVenda.id"
                     >
                       <td>{{ produtoVenda.nome }}</td>
                       <td>R$ {{ produtoVenda.preco }}</td>
-                      <td><v-icon class="" color="success" @click="test()">mdi-plus</v-icon></td>
+                      <td>
+                        <v-icon 
+                        class="" 
+                        color="success" 
+                        @click="addProdutoPedido(produtoVenda.nome, produtoVenda.preco)">
+                          mdi-plus
+                        </v-icon>
+                      </td>
                     </tr>
                   </tbody>
                 </template>
@@ -180,23 +190,24 @@
                   color="primary"
                 >
                   <v-list-item
-                    v-for="(item, i) in items"
-                    :key="i"
+                    v-for="produtoComanda in produtosComandas"
+                    :key="produtoComanda.id"
                     color="success"
                   >
                     <v-list-item-icon>
-                      <v-icon @click="test()">mdi-close</v-icon>
+                      <v-icon @click="deletarProdutoComanda(produtoComanda.id, produtoComanda.preco)">mdi-close</v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
-                      <v-list-item-title v-text="item.text"></v-list-item-title>
+                      <v-list-item-title>{{ produtoComanda.nome }}: <span class="success--text">R$ {{ produtoComanda.preco }}</span></v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list-item-group>
               </v-list>
               <v-divider class="ma-5 mt-10"></v-divider>
               <div class="ml-5"><h1>Valor total</h1></div>
-              <div class="ml-5"><span class="success--text"><h2>R$ 15,00</h2></span></div>
+              <div class="ml-5"><span class="success--text"><h2>R$ {{ infos.valorTotal.toFixed(2) }}</h2></span></div>
               <v-text-field
+                v-model="valorDesconto"
                 class="ma-5 mt-2 mb-0"
                 type="number"
                 prefix="R$"
@@ -204,8 +215,13 @@
                 outlined
                 label="Desconto"
                 append-icon="mdi-send"
-                @click:append="test()"
+                @click:append="descontoValorComanda()"
               ></v-text-field>
+              <v-btn
+                outlined
+                class="ml-5 warning white--text"
+                @click="resetarDesconto()"
+              >Resetar desconto</v-btn>
             </v-col>
           </v-row>
         </v-card>
@@ -215,18 +231,18 @@
 
 <script>
 //import { db, doc, setDoc } from "firebase/firestore";
-//import { doc, deleteDoc } from "firebase/firestore";
+import { doc, deleteDoc } from "firebase/firestore";
 import * as fb from '@/plugins/firebase'
 export default {
     data(){
         return{
+          valorDesconto: 0,
+          infos:{valorTotal: 0},
+          idComandaLog: "",
+          comandaPrioridade: "nao",
           dialogVenda: false,
           produtosVenda: [],
-          items: [
-            { text: 'Coca 2L'},
-            { text: 'Água'},
-            { text: 'Pote de sorvete'},
-          ],
+          produtosComandas: [],
           copos: [ {nome: "Copo (500ml)"}, {nome: "Copo (400ml)"}],
           comandas:[
             {nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star'},
@@ -238,7 +254,8 @@ export default {
     this.buscarProdutosVenda();
     },   
     methods: {
-      test(){
+      test(id){
+        alert(id)
         var dataAtual = new Date();
         var horas = dataAtual.getHours();
         var minutos = dataAtual.getMinutes();
@@ -260,10 +277,84 @@ export default {
           this.produtosVenda.push({
             nome: doc.data().produto,
             preco: doc.data().valor,
+            id: doc.data().produtoID,
           });
         }
+      },
+      async criarComanda(){
+        this.uid = fb.auth.currentUser.uid;
+        const res = await fb.comandasCollection.add({
+          uid: this.uid,
+        });
+        const idComanda = res.id;
+        await fb.comandasCollection.doc(idComanda).update({
+          ID_comanda: idComanda,
+        });
+        this.idComandaLog = idComanda
+      },
+      async excluirComandaLog(){
+        await deleteDoc(doc(fb.comandasCollection, this.idComandaLog));
+        var deleteItems = fb.produtosComandaCollection.where("ID_comanda_produto","==",this.idComandaLog);
+        deleteItems.get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            doc.ref.delete();
+          });
+        });
+      },
+      async addProdutoPedido(nome, preco){
+        this.uid = fb.auth.currentUser.uid;
+        const res = await fb.produtosComandaCollection.add({
+          uid: this.uid,
+          nome_produto_comanda: nome,
+          preco_produto_comanda: preco,
+          ID_comanda_produto: this.idComandaLog
+        });
+        const idProdutoComanda = res.id;
+        await fb.produtosComandaCollection.doc(idProdutoComanda).update({
+          ID_produto_comanda: idProdutoComanda,
+        });
+        this.buscarProdutoComanda();
+        this.infos.valorTotal += preco
+      },
+      async buscarProdutoComanda(){
+        this.uid = fb.auth.currentUser.uid;
+        this.produtosComandas = [];
+        const logProdutoComanda = await fb.produtosComandaCollection
+          .where("uid", "==", this.uid)
+          .where("ID_comanda_produto", "==", this.idComandaLog)
+          .get();
+        for (const doc of logProdutoComanda.docs) {
+          this.produtosComandas.push({
+            nome: doc.data().nome_produto_comanda,
+            preco: doc.data().preco_produto_comanda,
+            id: doc.data().ID_produto_comanda,
+        });
       }
-    }
+      },
+      async deletarProdutoComanda(idDeleteProduto, preco){
+        await deleteDoc(doc(fb.produtosComandaCollection, idDeleteProduto));
+        this.buscarProdutoComanda();
+        if(this.infos.valorTotal - preco < 0){
+        this.infos.valorTotal = 0
+        }
+        else
+        {
+        this.infos.valorTotal -= preco
+        }
+      },
+      async descontoValorComanda(){
+        if(this.infos.valorTotal - this.valorDesconto < 0){
+        this.infos.valorTotal = 0
+        }
+        else
+        {
+        this.infos.valorTotal -= this.valorDesconto
+        }
+      },
+      async resetarDesconto(){
+        
+      }
+  }
 }
 </script>
 

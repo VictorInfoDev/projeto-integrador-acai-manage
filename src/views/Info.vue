@@ -42,7 +42,7 @@
           </v-col>
           <v-col cols="12" sm="6">
           <v-card class="pa-5" elevation="5" height="600px">
-            <v-card-title>Últimas vendas</v-card-title>
+            <v-card-title><v-icon class="mr-2">mdi-clipboard-text-clock-outline</v-icon>Vendas de hoje</v-card-title>
               <v-simple-table
                 fixed-header
                 height="425px"
@@ -54,7 +54,10 @@
                         Nome pedido
                       </th>
                       <th class="text-left">
-                        Valor Total
+                        Valor(R$)
+                      </th>
+                      <th class="text-left">
+                        Horário
                       </th>
                     </tr>
                   </thead>
@@ -65,6 +68,7 @@
                     >
                       <td>{{ ultimas_vendas.name }}</td>
                       <td>{{ ultimas_vendas.calories }}</td>
+                      <td>{{ ultimas_vendas.horario }}</td>
                     </tr>
                   </tbody>
                 </template>
@@ -73,8 +77,32 @@
         </v-row>
         <v-row>
           <v-col>
-            <v-card class="pa-5" elevation="5">
-              opa
+            <v-card class="pa-3" elevation="5">
+              <div class="ma-5"><h2>Histórico de vendas</h2></div>
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Procurar"
+                single-line
+                hide-details
+                class="ma-5"
+              ></v-text-field>
+              <v-data-table :headers="headers" :items="desserts" :search="search">
+                <template v-slot:item.idvenda="{ item }">
+                  <v-chip v-model="item.idvenda" color="primary">
+                    {{ item.idvenda }}
+                  </v-chip>
+                </template>
+                <template v-slot:item.iconTable="{ item }">
+                <v-chip
+                  :disabled="configOpcao"
+                  class="success ml-3"
+                  @click="dialogInfoVenda = true"
+                >
+                  <v-icon v-model="item.iconTableExluir"> mdi-script-text-outline </v-icon>
+                </v-chip>
+              </template>
+              </v-data-table>
             </v-card>
           </v-col>
         </v-row>
@@ -153,6 +181,27 @@
             </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-dialog v-model="dialogInfoVenda" max-width="500">
+        <v-card>
+          <v-card-title class="success white--text">Mesa 1 <v-spacer></v-spacer><v-icon @click="dialogInfoVenda = false" color="white">mdi-close</v-icon></v-card-title>
+          <div class="ma-5 mt-2 mb-2"><h3>Informaçoes</h3></div>
+          <v-card-text class="">
+            <b>Dia:</b> 15/10/2022<br>
+            <b>Hora:</b> 20:35<br>
+            <b>Desconto:</b> R$ 5,00 <br>
+            <b>Valor total:</b> R$ 15,00 <br>
+          </v-card-text>
+          <v-divider></v-divider>
+          <div class="ma-5 mt-2 mb-2"><h3>Produtos</h3></div>
+          <v-list-item>
+          <v-list-item-content>
+              <v-list-item-title class="ml-1">Coca 2L: <span class="success--text"> R$ 2,00</span></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-divider></v-divider>
+          <div class="ml-5 mt-2"><h3>Copos</h3></div>
+        </v-card>
+      </v-dialog>
   </v-app>
 </template>
 
@@ -162,6 +211,8 @@ import { sendPasswordResetEmail, getAuth, sendEmailVerification, updateEmail } f
 export default {
     data () {
       return {
+        dialogInfoVenda: false,
+        search: "",
         infos: [],
         Edits: [],
         dialogInfo: false,
@@ -171,12 +222,7 @@ export default {
         BtnEmailVerificado: true,
         StkEmailverificado: false,
         disabledEdit: true,
-        vendas: [
-          {
-            name: 'Frozen Yogurt',
-            calories: 159, 
-          },
-        ],
+        // grafico ultimas vendas
         value: [
         423,
         446,
@@ -186,13 +232,28 @@ export default {
         610,
         760,
           ],
+        // infos tabela vendas
+        headers: [
+        {
+          text: "Data",
+          align: "start",
+          sortable: false,
+          value: "data",
+        },
+        { text: "Valor (R$)", value: "valor" },
+        { text: "Horário", value: "hora", sortable: false },
+        { text: "ID", value: "idvenda", sortable: false },
+        { text: "", value: "iconTable", sortable: false },
+        ],
+        desserts: [{data: "15/10/2022", valor: 15.5, hora: "20:06", idvenda: "12342344567"}],
       }
     },
     mounted(){
       this.buscarInfoEdit();
       this.buscarInfoUser();
     },
-    methods:{
+    methods: {
+      // functions principais
       async ResetSenha(){
         const auth = getAuth();
         const user = fb.auth.currentUser;
@@ -263,7 +324,7 @@ export default {
           this.buscarInfoEdit();
           this.dialogInfo = false;
       },
-    }
+    },
 }
 </script>
 
