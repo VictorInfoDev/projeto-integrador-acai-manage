@@ -361,12 +361,19 @@
         <v-card-text>
           <v-form ref="formClass">
             <v-text-field
-              label="Classificação"
+              label="Nome da classificação"
               required
               v-model="nameClass"
               append-icon="mdi-bookmark"
             >
             </v-text-field>
+            <v-checkbox
+              v-model="classAd"
+              label="classificação de adicionais do copo"
+              color="primary"
+              value="sim"
+              hide-details
+            ></v-checkbox>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -386,6 +393,7 @@ export default {
   data() {
     return {
       uid: "",
+      classAd: "nao",
       configOpcao: false,
       dialogClassDelete: false,
       dialogEditar: false,
@@ -528,6 +536,7 @@ export default {
         const res = await fb.classeCollection.add({
           uid: this.uid,
           classeSelect: this.nameClass,
+          adicional: this.classAd
         });
         const idclasseAdd = res.id;
         await fb.classeCollection.doc(idclasseAdd).update({

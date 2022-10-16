@@ -84,7 +84,7 @@
               v-model="comandaPrioridade"
               label="Prioridade"
               color="orange"
-              value="sim"
+              value="mdi-star"
               hide-details
               class="mr-5"
             ></v-checkbox>
@@ -165,7 +165,7 @@
               <v-card outlined class="ma-5 pa-3">
                 <v-row>
                   <v-col cols="12" sm="4">
-                    <v-card @click="test()">
+                    <v-card @click="addCopoComanda(), dialogAddCopo = true">
                       <v-card-title class="success white--text"><v-icon color="white" class="mr-2">mdi-plus</v-icon>Adicionar copo</v-card-title>
                     </v-card>
                   </v-col>
@@ -212,6 +212,7 @@
                 type="number"
                 prefix="R$"
                 color="warning"
+                :disabled="descontoValid"
                 outlined
                 label="Desconto"
                 append-icon="mdi-send"
@@ -220,10 +221,134 @@
               <v-btn
                 outlined
                 class="ml-5 warning white--text"
+                :disabled="!descontoValid"
                 @click="resetarDesconto()"
               >Resetar desconto</v-btn>
             </v-col>
           </v-row>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialogAddCopo" max-width="700" persistent>
+        <v-card>
+          <v-card-title class="purple darken-3 white--text">
+            Criando copo...
+            <v-spacer></v-spacer>
+            <div class="warning--text mr-3">R$ {{ valorCopoComanda.toFixed(2) }}</div>
+            <v-icon color="white" @click="dialogAddCopo = false">mdi-close</v-icon>
+          </v-card-title>
+            <v-stepper
+              v-model="e6"
+              vertical
+            >
+              <v-stepper-step
+                :complete="e6 > 1"
+                step="1"
+                color="purple darken-3"
+              >
+                Copo
+                <small>Escolha o tamanho do copo</small>
+              </v-stepper-step>
+              <v-stepper-content step="1">
+                <v-card
+                  class="ml-3"
+                  elevation="0"
+                >
+                <v-radio-group v-model="radioGroupValue">
+                  <v-row>
+                    <v-col cols="12" sm="4" v-for="copo in coposRadio" :key="copo.id">
+                      <v-radio
+                      @click="proxBtnCopo = false"
+                      color="purple darken-3"
+                      :label="copo.nome"
+                      :value="copo.id"
+                    ></v-radio>
+                    </v-col>
+                  </v-row> 
+                </v-radio-group>
+                </v-card>
+                <v-btn
+                  color="purple darken-3 white--text"
+                  @click="addValorCopo(),e6 = 2"
+                  :disabled="proxBtnCopo"
+                >
+                  Continuar
+                </v-btn>
+              </v-stepper-content>
+
+              <v-stepper-step
+              color="purple darken-3"
+                :complete="e6 > 2"
+                step="2"
+              >
+                Adicionais
+                <small>Escolha os adicionais </small>
+              </v-stepper-step>
+              
+              <v-stepper-content step="2">
+                <v-card class="mb-3">
+                  <v-tabs
+                    background-color="purple darken-3"
+                    center-active
+                    dark
+                  >
+                    <v-tab v-for="classeCopoVenda in classesCopoVenda" :key="classeCopoVenda.id"
+                    @click="buscarProdutoClass(classeCopoVenda.nome)" 
+                    >{{ classeCopoVenda.nome }}
+                    </v-tab>
+                  </v-tabs>
+                  <v-list-item class="purple darken-3">
+                    <v-list-item-title class="white--text">
+                      <v-icon class="mr-2" color="white">mdi-information</v-icon>Escolha uma classificação
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item v-for="adicional in adicionais" :key="adicional.classe">
+                    <v-list-item-content>
+                      <v-list-item-title><b>{{ adicional.nome }}:</b> <span class="success--text">R${{ adicional.valor.toFixed(2) }}</span> </v-list-item-title>
+                      
+                    </v-list-item-content>
+                    <v-list-item-action>
+                    <v-btn icon @click="addAdicionalCopo(adicional.classe, adicional.nome)">
+                      <v-chip class="success"><v-icon color="">mdi-plus</v-icon></v-chip>
+                    </v-btn>
+                  </v-list-item-action>
+                  </v-list-item>
+                </v-card>
+                <v-btn
+                  color="purple darken-3 white--text"
+                  @click="e6 = 3"
+                >
+                  Continuar
+                </v-btn>
+                <v-btn text @click="resetCopo(),e6 = 1, proxBtnCopo = true">
+                  Voltar
+                </v-btn>
+              </v-stepper-content>
+
+              <v-stepper-step
+              color="purple darken-3"
+                :complete="e6 > 3"
+                step="3"
+              >
+                Complemento
+              </v-stepper-step>
+
+              <v-stepper-content step="3">
+                <v-card
+                  color="grey lighten-1"
+                  class="mb-12"
+                  height="200px"
+                ></v-card>
+                <v-btn
+                  color="primary"
+                  @click="e6 = 4"
+                >
+                  Finalizar
+                </v-btn>
+                <v-btn text @click="e6 = 2">
+                  Voltar
+                </v-btn>
+              </v-stepper-content>
+            </v-stepper>
         </v-card>
       </v-dialog>
   </v-app>
@@ -236,13 +361,24 @@ import * as fb from '@/plugins/firebase'
 export default {
     data(){
         return{
-          valorDesconto: 0,
+          proxBtnCopo: true,
+          classeProdutoAd: "",
+          valorCancelarCopo: null,
+          radioGroupValue: "",
+          valorCopoComanda: 0,
+          e6: 1,
+          descontoValid: false,
+          valorDesconto: null,
           infos:{valorTotal: 0},
           idComandaLog: "",
-          comandaPrioridade: "nao",
+          comandaPrioridade: "",
+          dialogAddCopo: false,
           dialogVenda: false,
+          adicionais: [],
+          classesCopoVenda: [],
           produtosVenda: [],
           produtosComandas: [],
+          coposRadio: [],
           copos: [ {nome: "Copo (500ml)"}, {nome: "Copo (400ml)"}],
           comandas:[
             {nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star'},
@@ -253,19 +389,7 @@ export default {
     mounted() {
     this.buscarProdutosVenda();
     },   
-    methods: {
-      test(id){
-        alert(id)
-        var dataAtual = new Date();
-        var horas = dataAtual.getHours();
-        var minutos = dataAtual.getMinutes();
-        var dia = dataAtual.getDate();
-        var mes = (dataAtual.getMonth() + 1);
-        var ano = dataAtual.getFullYear();
-        alert(horas + ":" + minutos)
-        alert(dia + "/" + mes + "/" + ano)
-      },
-      
+    methods: {   
       async buscarProdutosVenda(){
         this.uid = fb.auth.currentUser.uid;
         this.produtosVenda = [];
@@ -283,8 +407,18 @@ export default {
       },
       async criarComanda(){
         this.uid = fb.auth.currentUser.uid;
+        var dataAtual = new Date();
+        var horas = dataAtual.getHours();
+        var minutos = dataAtual.getMinutes();
+        var dia = dataAtual.getDate();
+        var mes = (dataAtual.getMonth() + 1);
+        var ano = dataAtual.getFullYear();
+        var horario = horas + ":" + minutos
+        var data = dia + "/" + mes + "/" + ano 
         const res = await fb.comandasCollection.add({
           uid: this.uid,
+          data: data,
+          horario: horario
         });
         const idComanda = res.id;
         await fb.comandasCollection.doc(idComanda).update({
@@ -349,10 +483,88 @@ export default {
         else
         {
         this.infos.valorTotal -= this.valorDesconto
+        this.descontoValid = true
         }
       },
       async resetarDesconto(){
-        
+        var numberDesconto = parseInt(this.valorDesconto)
+        this.infos.valorTotal += numberDesconto
+        this.valorDesconto = null
+        this.descontoValid = false
+      },
+      async addCopoComanda(){
+        this.valorCopoComanda = 0
+        this.e6 = 1
+        this.proxBtnCopo = true
+        this.buscarCoposAddComanda();
+        this.buscarClassesAdicionais();
+        this.buscarAdicionais();
+      },
+      async buscarCoposAddComanda(){
+        this.uid = fb.auth.currentUser.uid;
+        this.coposRadio = [];
+        const logCopoRadio = await fb.produtosCollection
+          .where("uid", "==", this.uid)
+          .where("classe", "==", "Copos")
+          .get();
+        for (const doc of logCopoRadio.docs) {
+          this.coposRadio.push({
+            nome: doc.data().produto,
+            valor: doc.data().valor,
+            id: doc.data().produtoID,
+        });
+       }
+      },
+      async addValorCopo(){
+        this.uid = fb.auth.currentUser.uid;
+        const logBuscaRadio = await fb.produtosCollection
+          .where("uid", "==", this.uid)
+          .where("produtoID", "==", this.radioGroupValue)
+          .get();
+        for (const doc of logBuscaRadio.docs) {
+          this.valorCancelarCopo = doc.data().valor
+          this.valorCopoComanda += doc.data().valor
+        }
+      },
+      async resetCopo(){
+        this.valorCopoComanda -= this.valorCancelarCopo
+        this.radioGroupValue = 0
+        this.valorCancelarCopo = 0
+      },
+      async buscarClassesAdicionais(){
+        this.uid = fb.auth.currentUser.uid;
+        this.classesCopoVenda = []
+        const logClass = await fb.classeCollection
+          .where("uid", "==", this.uid)
+          .where("adicional", "==", "sim")
+          .get();
+        for (const doc of logClass.docs) {
+          this.classesCopoVenda.push({
+            nome: doc.data().classeSelect,
+            id: doc.data().classeID,
+        });
+       }
+
+      },
+      async buscarAdicionais(){
+        this.uid = fb.auth.currentUser.uid;
+        this.adicionais = []
+        const logClassAd = await fb.produtosCollection
+          .where("uid", "==", this.uid)
+          .where("classe", "==", this.classeProdutoAd)
+          .get();
+        for (const doc of logClassAd.docs) {
+          this.adicionais.push({
+            classe: doc.data().classe,
+            nome: doc.data().produto,
+            id: doc.data().produtoID,
+            valor: doc.data().valor
+        });
+       }
+      },
+      async buscarProdutoClass(classe){
+        this.classeProdutoAd = classe
+        this.buscarAdicionais();
       }
   }
 }
