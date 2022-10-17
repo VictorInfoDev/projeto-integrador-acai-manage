@@ -92,7 +92,8 @@
               <v-btn
                 dark
                 text
-                @click="dialogVenda = false"
+                @click="salvarComanda(),dialogVenda = false"
+                :disabled="comandaValid"
               >
                 Criar
                 <v-icon small>mdi-plus</v-icon>
@@ -172,8 +173,10 @@
                   <v-col cols="12" sm="4" v-for="copo in copos" :key="copo.id">
                     <v-card>
                       <v-card-title class="purple darken-3 white--text">
-                        <v-icon class="mr-2" color="white">mdi-cup-outline</v-icon>
+                        <v-icon v-model="copo.valor" class="mr-2" color="white">mdi-cup-outline</v-icon>
                         {{ copo.nome }}
+                        <v-spacer></v-spacer>
+                        <v-icon @click="excluirCopoComandaQuadro(copo.id, copo.valor)" color="white">mdi-close</v-icon>
                       </v-card-title>
                         <v-list-item>
                           <v-list-item-content>
@@ -400,11 +403,14 @@
 
 <script>
 //import { db, doc, setDoc } from "firebase/firestore";
-import { doc, deleteDoc } from "firebase/firestore";
+import { doc, deleteDoc} from "firebase/firestore";
 import * as fb from '@/plugins/firebase'
 export default {
     data(){
         return{
+          comandaValid: true,
+          nomeComanda: "",
+          descricaoComanda: "",
           copoComplemento: "Aberto",
           proxBtnCopo: true,
           classeProdutoAd: "",
@@ -476,7 +482,11 @@ export default {
         this.buscarCoposComanda();
         this.buscarAdicionaisCopoComanda();
         this.buscarProdutoComanda();
+        this.comandaValidFunction();
         this.infos.valorTotal = 0
+        this.nomeComanda = ""
+        this.descricaoComanda = ""
+        this.comandaPrioridade = ""
       },
       async excluirComandaLog(){
         await deleteDoc(doc(fb.comandasCollection, this.idComandaLog));
@@ -513,6 +523,7 @@ export default {
         });
         this.buscarProdutoComanda();
         this.infos.valorTotal += preco
+        this.comandaValidFunction();
       },
       async buscarProdutoComanda(){
         this.uid = fb.auth.currentUser.uid;
@@ -741,6 +752,42 @@ export default {
             id: doc.data().ID_copo_comanda
         });
        }
+    },
+    async excluirCopoComandaQuadro(idCopoQuadro, valor){
+      await deleteDoc(doc(fb.coposComandaCollection, idCopoQuadro));
+        var deleteCopoQuadro = fb.adicionaisCopoCollection.where("ID_copo_comanda","==", idCopoQuadro);
+        deleteCopoQuadro.get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            doc.ref.delete();
+          });
+        });
+      this.buscarCoposComanda();
+      this.infos.valorTotal -= valor
+    },
+    async salvarComanda(){
+        this.uid = fb.auth.currentUser.uid;
+        await fb.comandasCollection.doc(this.idComandaLog).update({
+          nome_comanda: this.nomeComanda,
+          descricao_comanda: this.descricaoComanda,
+          valor_comanda: this.infos.valorTotal,
+          prioridade: this.comandaPrioridade
+        });
+    },
+    async comandaValidFunction(){
+        if (this.nomeComanda == ""){
+          this.comandaValid = true
+        }
+        else{
+          this.comandaValid = false
+        }
+        this.uid = fb.auth.currentUser.uid;
+          const produtoDocs = await fb.produtosComandaCollection
+          .where("uid", "==", this.uid)
+          .where("ID_comanda_produto", "==", this.idComandaLog)
+          .get();
+          const tamanhoDocsProdutoComanda = produtoDocs.docs.length
+          alert(tamanhoDocsProdutoComanda)
+        
     }
   }
 }
