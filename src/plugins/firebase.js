@@ -23,10 +23,12 @@ const perfilCollection = db.collection('perfil')
 const lembretesCollection = db.collection('lembretes')
 const comandasCollection = db.collection('comandas')
 const produtosComandaCollection = db.collection('produtosComanda')
+const coposComandaCollection = db.collection('copos')
+const adicionaisCopoCollection = db.collection('adicionais')
 
 
 
 
 export {
-    db , auth , classeCollection, produtosCollection, perfilCollection, comandasCollection, lembretesCollection, produtosComandaCollection
+    db , auth , classeCollection, produtosCollection, perfilCollection, comandasCollection, lembretesCollection, produtosComandaCollection, adicionaisCopoCollection, coposComandaCollection
 }

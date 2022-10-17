@@ -175,11 +175,25 @@
                         <v-icon class="mr-2" color="white">mdi-cup-outline</v-icon>
                         {{ copo.nome }}
                       </v-card-title>
-                        <v-list-item v-for="copoItem in coposItems" :key="copoItem.id">
+                        <v-list-item>
                           <v-list-item-content>
-                            <v-list-item-title><b>{{ copoItem.classe }}</b> - {{ copoItems.adicional }}</v-list-item-title>
+                            <v-list-item-title><b>Copo:</b> {{ copo.tipo }}</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title><b>Valor:</b> <span class="success--text">R$ {{ copo.valor.toFixed(2) }}</span></v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                        <v-divider></v-divider>
+                        
+                        <div class="ma-4 mt-0">
+                          <div v-for="copoItem in coposItems" :key="copoItem.id">
+                            <div v-if="copo.id == copoItem.id">
+                              <div class="mb-2"><b>{{ copoItem.classe }}:</b> {{ copoItem.adicional }}</div>
+                            </div>
+                          </div>
+                        </div>
                     </v-card>
                   </v-col>
                 </v-row>
@@ -234,7 +248,7 @@
             Criando copo...
             <v-spacer></v-spacer>
             <div class="warning--text mr-3">R$ {{ valorCopoComanda.toFixed(2) }}</div>
-            <v-icon color="white" @click="dialogAddCopo = false">mdi-close</v-icon>
+            <v-icon color="white" @click="dialogAddCopo = false, excluirCopoComanda()">mdi-close</v-icon>
           </v-card-title>
             <v-stepper
               v-model="e6"
@@ -298,7 +312,7 @@
                   </v-tabs>
                   <v-list-item class="purple darken-3">
                     <v-list-item-title class="white--text">
-                      <v-icon class="mr-2" color="white">mdi-information</v-icon>Escolha uma classificação
+                      <v-icon class="mr-2" color="white">mdi-information</v-icon>Escolha uma classificação de adicionais acima, caso não tenha registre uma.
                     </v-list-item-title>
                   </v-list-item>
                   <v-list-item v-for="adicional in adicionais" :key="adicional.classe">
@@ -307,10 +321,26 @@
                       
                     </v-list-item-content>
                     <v-list-item-action>
-                    <v-btn icon @click="addAdicionalCopo(adicional.classe, adicional.nome)">
-                      <v-chip class="success"><v-icon color="">mdi-plus</v-icon></v-chip>
+                    <v-btn icon>
+                      <v-chip class="success" @click="addAdicionalCopo(adicional.classe, adicional.nome, adicional.valor)"><v-icon color="">mdi-plus</v-icon></v-chip>
                     </v-btn>
                   </v-list-item-action>
+                  </v-list-item>
+                </v-card>
+                <v-card class="mt-3 mb-3" outlined>
+                  <v-card-title>
+                    <font color="#6200EA">Adicionais</font> 
+                  </v-card-title>
+                  <v-divider></v-divider>
+                  <v-list-item v-for="adicionalCopo in adicionaisCopo" :key="adicionalCopo.id">
+                    <v-list-item-content>
+                      <v-list-item-title><b>{{ adicionalCopo.classe }}:</b> {{ adicionalCopo.nome }} <span class="success--text">R${{ adicionalCopo.valor.toFixed(2) }}</span> </v-list-item-title>
+                    </v-list-item-content>
+                    <v-list-item-action>
+                      <v-btn icon>
+                        <v-icon color="error" @click="excluirAdicionalCopo(adicionalCopo.id, adicionalCopo.valor)">mdi-close</v-icon>
+                      </v-btn>
+                    </v-list-item-action>
                   </v-list-item>
                 </v-card>
                 <v-btn
@@ -333,14 +363,28 @@
               </v-stepper-step>
 
               <v-stepper-content step="3">
-                <v-card
-                  color="grey lighten-1"
-                  class="mb-12"
-                  height="200px"
-                ></v-card>
+                <v-card elevation="0">
+                  <div><h4>Copo aberto ou fechado?</h4></div>
+                  <v-radio-group
+                    v-model="copoComplemento"
+                    column
+                    class="ml-2"
+                  >
+                    <v-radio
+                      label="Aberto"
+                      color="purple darken-3"
+                      value="Aberto"
+                    ></v-radio>
+                    <v-radio
+                      label="Fechado"
+                      color="purple darken-3"
+                      value="Fechado"
+                    ></v-radio>
+                  </v-radio-group>
+                </v-card>
                 <v-btn
-                  color="primary"
-                  @click="e6 = 4"
+                  color="purple darken-3 white--text"
+                  @click="salvarCopoComanda(),e6 = 4"
                 >
                   Finalizar
                 </v-btn>
@@ -361,6 +405,7 @@ import * as fb from '@/plugins/firebase'
 export default {
     data(){
         return{
+          copoComplemento: "Aberto",
           proxBtnCopo: true,
           classeProdutoAd: "",
           valorCancelarCopo: null,
@@ -370,16 +415,19 @@ export default {
           descontoValid: false,
           valorDesconto: null,
           infos:{valorTotal: 0},
+          idCopoComandaLog: "",
           idComandaLog: "",
           comandaPrioridade: "",
           dialogAddCopo: false,
           dialogVenda: false,
+          adicionaisCopo: [],
           adicionais: [],
           classesCopoVenda: [],
           produtosVenda: [],
           produtosComandas: [],
           coposRadio: [],
-          copos: [ {nome: "Copo (500ml)"}, {nome: "Copo (400ml)"}],
+          copos: [],
+          coposItems: [ {classe: "cobertura", adicional: "opa"} ],
           comandas:[
             {nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star'},
             {nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: ''}
@@ -425,11 +473,26 @@ export default {
           ID_comanda: idComanda,
         });
         this.idComandaLog = idComanda
+        this.buscarCoposComanda();
+        this.buscarAdicionaisCopoComanda();
+        this.infos.valorTotal = 0
       },
       async excluirComandaLog(){
         await deleteDoc(doc(fb.comandasCollection, this.idComandaLog));
-        var deleteItems = fb.produtosComandaCollection.where("ID_comanda_produto","==",this.idComandaLog);
-        deleteItems.get().then(function(querySnapshot) {
+        var deleteProdutos = fb.produtosComandaCollection.where("ID_comanda_produto","==",this.idComandaLog);
+        deleteProdutos.get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            doc.ref.delete();
+          });
+        });
+        var deleteCopos = fb.coposComandaCollection.where("ID_comanda_copo","==",this.idComandaLog);
+        deleteCopos.get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            doc.ref.delete();
+          });
+        });
+        var deleteAdicionais = fb.adicionaisCopoCollection.where("ID_comanda_copo","==",this.idComandaLog);
+        deleteAdicionais.get().then(function(querySnapshot) {
           querySnapshot.forEach(function(doc) {
             doc.ref.delete();
           });
@@ -487,18 +550,29 @@ export default {
         }
       },
       async resetarDesconto(){
-        var numberDesconto = parseInt(this.valorDesconto)
+        var numberDesconto = parseFloat(this.valorDesconto)
         this.infos.valorTotal += numberDesconto
         this.valorDesconto = null
         this.descontoValid = false
       },
       async addCopoComanda(){
+        this.uid = fb.auth.currentUser.uid;
+        const res = await fb.coposComandaCollection.add({
+          uid: this.uid,
+          ID_comanda_copo: this.idComandaLog 
+        });
+        const idCopo = res.id;
+        await fb.coposComandaCollection.doc(idCopo).update({
+          ID_copo_comanda: idCopo,
+        });
         this.valorCopoComanda = 0
         this.e6 = 1
         this.proxBtnCopo = true
+        this.idCopoComandaLog = idCopo
         this.buscarCoposAddComanda();
         this.buscarClassesAdicionais();
         this.buscarAdicionais();
+        this.buscarAdicionaisCopo();
       },
       async buscarCoposAddComanda(){
         this.uid = fb.auth.currentUser.uid;
@@ -565,7 +639,108 @@ export default {
       async buscarProdutoClass(classe){
         this.classeProdutoAd = classe
         this.buscarAdicionais();
-      }
+      },
+      async addAdicionalCopo(classe, nome, valor){
+        this.uid = fb.auth.currentUser.uid;
+        const res = await fb.adicionaisCopoCollection.add({
+          uid: this.uid,
+          nome_adicional_copo: nome,
+          classe_adicional_copo: classe,
+          valor_adicional_copo: valor,
+          ID_copo_comanda: this.idCopoComandaLog,
+          ID_comanda_copo: this.idComandaLog,
+        });
+        const idAdicional = res.id;
+        await fb.adicionaisCopoCollection.doc(idAdicional).update({
+          ID_adicional_copo: idAdicional,
+        });
+        this.buscarAdicionaisCopo();
+        this.valorCopoComanda += valor
+        
+      },
+      async buscarAdicionaisCopo(){
+        this.uid = fb.auth.currentUser.uid;
+        this.adicionaisCopo = []
+        const logAdCopo = await fb.adicionaisCopoCollection
+          .where("uid", "==", this.uid)
+          .where("ID_copo_comanda", "==", this.idCopoComandaLog)
+          .get();
+        for (const doc of logAdCopo.docs) {
+          this.adicionaisCopo.push({
+            classe: doc.data().classe_adicional_copo,
+            nome: doc.data().nome_adicional_copo,
+            id: doc.data().ID_adicional_copo,
+            valor: doc.data().valor_adicional_copo
+        });
+       }
+      },
+      async excluirAdicionalCopo(idAdicional, valor){
+        await deleteDoc(doc(fb.adicionaisCopoCollection, idAdicional));
+        this.valorCopoComanda -= valor
+        this.buscarAdicionaisCopo();
+        
+      },
+      async excluirCopoComanda(){
+        await deleteDoc(doc(fb.coposComandaCollection, this.idCopoComandaLog));
+        var deleteItems = fb.adicionaisCopoCollection.where("ID_copo_comanda","==",this.idCopoComandaLog);
+        deleteItems.get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            doc.ref.delete();
+          });
+        });
+        this.idCopoComandaLog = ""
+      },
+      async salvarCopoComanda(){
+        this.uid = fb.auth.currentUser.uid;
+        const logPr = await fb.produtosCollection
+          .where("uid", "==", this.uid)
+          .where("produtoID", "==", this.radioGroupValue)
+          .get();
+        for (const doc of logPr.docs) {
+          var nomeCopo = doc.data().produto
+          }
+        await fb.coposComandaCollection.doc(this.idCopoComandaLog).update({
+          nome_copo_comanda: nomeCopo,
+          tipo_copo_comanda: this.copoComplemento,
+          valor_copo_comanda: this.valorCopoComanda
+        });
+        this.infos.valorTotal += this.valorCopoComanda
+        this.dialogAddCopo = false
+        this.valorCopoComanda = 0
+        this.buscarCoposComanda();
+        this.buscarAdicionaisCopoComanda();
+    },
+    async buscarCoposComanda(){
+      this.uid = fb.auth.currentUser.uid;
+        this.copos = []
+        const logBsCopo = await fb.coposComandaCollection
+          .where("uid", "==", this.uid)
+          .where("ID_comanda_copo", "==", this.idComandaLog)
+          .get();
+        for (const doc of logBsCopo.docs) {
+          this.copos.push({
+            nome: doc.data().nome_copo_comanda,
+            tipo: doc.data().tipo_copo_comanda,
+            valor: doc.data().valor_copo_comanda,
+            id: doc.data().ID_copo_comanda
+        });
+       }
+    },
+    async buscarAdicionaisCopoComanda(){
+      this.uid = fb.auth.currentUser.uid;
+        this.coposItems = []
+        const logBsCopoAd = await fb.adicionaisCopoCollection
+          .where("uid", "==", this.uid)
+          .where("ID_comanda_copo", "==", this.idComandaLog)
+          .get();
+        for (const doc of logBsCopoAd.docs) {
+          this.coposItems.push({
+            classe: doc.data().classe_adicional_copo,
+            adicional: doc.data().nome_adicional_copo,
+            id: doc.data().ID_copo_comanda
+        });
+       }
+    }
   }
 }
 </script>
