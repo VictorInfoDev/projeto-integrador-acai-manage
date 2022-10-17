@@ -475,6 +475,7 @@ export default {
         this.idComandaLog = idComanda
         this.buscarCoposComanda();
         this.buscarAdicionaisCopoComanda();
+        this.buscarProdutoComanda();
         this.infos.valorTotal = 0
       },
       async excluirComandaLog(){
