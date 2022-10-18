@@ -44,7 +44,7 @@
       </v-card>
     </v-dialog>
     <!--Botao criação lembrete-->
-    <v-btn fixed fab large dark bottom right class="ma-5 blue-grey lighten-4" @click="dialogLembrete = !dialogLembrete">
+    <v-btn fixed fab large dark bottom right class="ma-5 blue-grey lighten-4" @click="criarLembrete()">
       <v-icon color="black">mdi-card-plus-outline</v-icon>
     </v-btn>
     <!--JANELA DO LEMBRETE-->
@@ -155,6 +155,16 @@ export default {
         });
       }
     },
+    async criarLembrete(){
+      this.dialogLembrete = true
+      var dataAtual = new Date();
+      var dia = dataAtual.getDate();
+      var mes = (dataAtual.getMonth() + 1);
+      var ano = dataAtual.getFullYear();
+      var data = dia + "/" + mes + "/" + ano
+      this.dataLembrete = data
+
+    }
   },
 };
 </script>
