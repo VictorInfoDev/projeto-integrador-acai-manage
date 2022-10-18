@@ -135,7 +135,7 @@ export default {
         { title: "Vendas", icon: "mdi-basket-unfill", to: "/Venda" },
         { title: "Produtos", icon: "mdi-basket", to: "/Produtos" },
         { title: "Lembretes", icon: "mdi-clipboard-outline", to: "/Lembretes" },
-        { title: "Informações", icon: "mdi-store-cog", to: "/Info" },
+        { title: "Informações", icon: "mdi-equalizer", to: "/Info" },
       ],
 
     }
