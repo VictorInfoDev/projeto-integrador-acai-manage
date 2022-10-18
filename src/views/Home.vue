@@ -40,7 +40,7 @@
       class="text-center"
       cols="12"
     >
-      @victorhgca @__adelar @jfonsakkka — <strong>Projeto Açaí Manager</strong>
+      @__adelar @jfonsakkka @victorhgca— <strong>Projeto Açaí Manager</strong>
     </v-col>
   </v-footer>
 </v-app>
