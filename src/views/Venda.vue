@@ -780,14 +780,6 @@ export default {
         else{
           this.comandaValid = false
         }
-        this.uid = fb.auth.currentUser.uid;
-          const produtoDocs = await fb.produtosComandaCollection
-          .where("uid", "==", this.uid)
-          .where("ID_comanda_produto", "==", this.idComandaLog)
-          .get();
-          const tamanhoDocsProdutoComanda = produtoDocs.docs.length
-          alert(tamanhoDocsProdutoComanda)
-        
     }
   }
 }
