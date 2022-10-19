@@ -1,6 +1,47 @@
 <template>
-  <v-app>
+  <v-app :style="{'background-image':'url(https://static.vecteezy.com/ti/fotos-gratis/p2/6986555-moderno-soft-fade-roxo-para-rosa-gradiente-abstrato-fundo-citacoes-e-tipos-de-apresentacao-baseado-fundo-design-adequado-para-papel-de-parede-cotacoes-site-abertura-apresentacao-perfil-pessoal-foto.jpg)'}">
       <div class="pa-10">
+        <v-card class="mb-5">
+          <v-card-title class="pa-7"><v-icon class="mr-2" color="red">mdi-chart-donut</v-icon> Metas de vendas <v-spacer></v-spacer><v-icon large @click="test()">mdi-pencil</v-icon></v-card-title>
+          <v-row class="pa-15 pt-10">
+            <v-col class="text-center">
+              <div class="mb-5 purple--text"><h1>Meta do dia: 10</h1></div>
+              <v-progress-circular
+                :rotate="270"
+                :size="150"
+                :width="20"
+                :value="valueDia"
+                color="purple"
+              >
+                {{ valueDia }}%
+              </v-progress-circular>
+            </v-col>
+            <v-col class="text-center">
+              <div class="mb-5 success--text"><h1>Meta do mês: 24</h1></div>
+              <v-progress-circular
+                :rotate="270"
+                :size="150"
+                :width="20"
+                :value="valueMes"
+                color="success"
+              >
+                {{ valueMes }}%
+              </v-progress-circular>
+            </v-col>
+            <v-col class="text-center">
+              <div class="mb-5 orange--text"><h1>Meta do ano: 2000</h1></div>
+              <v-progress-circular
+                :rotate="270"
+                :size="150"
+                :width="20"
+                :value="valueAno"
+                color="orange"
+              >
+                {{ valueAno }}%
+              </v-progress-circular>
+            </v-col>
+          </v-row>
+        </v-card>
         <v-row>
           <v-col>
             <v-card class="pa-5" elevation="5" height="600" v-for="info in infos" :key="info.id">
@@ -8,7 +49,7 @@
             <v-card-subtitle>{{ info.email }}</v-card-subtitle>
             <v-card-text>
                 <b>CNPJ:</b>{{ info.cnpj }}<br>
-                <v-btn @click="dialogInfo = true, buscarInfoEdit()" outlined class="mt-2">Editar</v-btn>
+                <v-btn @click="dialogInfo = true, buscarInfoEdit()" tile class="mt-2 white--text" color="purple"><v-icon class="mr-2">mdi-pencil</v-icon> Editar</v-btn>
             </v-card-text>
             <v-divider></v-divider>
             <v-card
@@ -18,21 +59,23 @@
             >
               <v-card-text>
                 <div class="text-h4 black--text">
-                  Últimas vendas
+                   Progresso da semana
                 </div>
               </v-card-text>
               <v-card-text>
                 <v-sheet color="white" rounded>
                   <v-sparkline
+                    :labels="labels"
                     :value="value"
                     color="black"
+                    :gradient="gradient"
                     height="100"
                     padding="24"
                     stroke-linecap="round"
                     smooth
+                    auto-draw
                   >
-                    <template v-slot:label="item">
-                      R${{ item.value }}
+                    <template>
                     </template>
                   </v-sparkline>
                 </v-sheet>
@@ -42,7 +85,7 @@
           </v-col>
           <v-col cols="12" sm="6">
           <v-card class="pa-5" elevation="5" height="600px">
-            <v-card-title><v-icon class="mr-2">mdi-clipboard-text-clock-outline</v-icon>Vendas de hoje</v-card-title>
+            <v-card-title><v-icon class="mr-2" color="warning">mdi-clipboard-text-clock-outline</v-icon>Vendas de hoje</v-card-title>
               <v-simple-table
                 fixed-header
                 height="425px"
@@ -66,8 +109,8 @@
                       v-for="ultimas_vendas in vendas"
                       :key="ultimas_vendas.name"
                     >
-                      <td>{{ ultimas_vendas.name }}</td>
-                      <td>{{ ultimas_vendas.calories }}</td>
+                      <td>{{ ultimas_vendas.nome }}</td>
+                      <td>{{ ultimas_vendas.valor.toFixed(2) }}</td>
                       <td>{{ ultimas_vendas.horario }}</td>
                     </tr>
                   </tbody>
@@ -86,10 +129,11 @@
                 single-line
                 hide-details
                 class="ma-5"
+                color="purple"
               ></v-text-field>
               <v-data-table :headers="headers" :items="desserts" :search="search">
                 <template v-slot:item.idvenda="{ item }">
-                  <v-chip v-model="item.idvenda" color="primary">
+                  <v-chip v-model="item.idvenda" color="pink accent-1 white--text">
                     {{ item.idvenda }}
                   </v-chip>
                 </template>
@@ -99,7 +143,7 @@
                   class="success ml-3"
                   @click="dialogInfoVenda = true"
                 >
-                  <v-icon v-model="item.iconTableExluir"> mdi-script-text-outline </v-icon>
+                  <v-icon v-model="item.iconTableExluir" color="white"> mdi-script-text-outline </v-icon>
                 </v-chip>
               </template>
               </v-data-table>
@@ -109,7 +153,7 @@
       </div>
       <v-dialog v-model="dialogInfo" max-width="500">
         <v-card v-for="Edit in Edits" :key="Edit.id">
-          <v-card-title class="dark"><v-icon class="mr-3">mdi-store-edit</v-icon>Editar informações</v-card-title>
+          <v-card-title class="dark white--text" :style="{'background-image':'url(https://static.vecteezy.com/ti/fotos-gratis/p2/6986555-moderno-soft-fade-roxo-para-rosa-gradiente-abstrato-fundo-citacoes-e-tipos-de-apresentacao-baseado-fundo-design-adequado-para-papel-de-parede-cotacoes-site-abertura-apresentacao-perfil-pessoal-foto.jpg)'}"><v-icon class="mr-3" color="white">mdi-store-edit</v-icon>Editar informações</v-card-title>
           <v-divider></v-divider>
           <v-btn
             block
@@ -206,11 +250,28 @@
 </template>
 
 <script>
+const gradients = [
+    ['purple'],
+    ['green'],
+    ['green', 'purple', 'purple'],
+    ['purple', 'green'],
+    ['purple', 'purple', 'green'],
+    ['orange', 'purple', 'red'],
+  ]
 import * as fb from '@/plugins/firebase'
 import { sendPasswordResetEmail, getAuth, sendEmailVerification, updateEmail } from "firebase/auth";
 export default {
     data () {
       return {
+        metaDia: 10,
+        metaMes: 240,
+        metaAno: 2000,
+        dbDia: 3,
+        dbMes: 24,
+        dbAno: 250,
+        gradient: gradients[5],
+        gradientDirection: 'top',
+        gradients,
         dialogInfoVenda: false,
         search: "",
         infos: [],
@@ -222,6 +283,19 @@ export default {
         BtnEmailVerificado: true,
         StkEmailverificado: false,
         disabledEdit: true,
+        // tabela vendaahoje
+        vendas: [
+          { nome: 'Mesa 01', valor: 12, horario: '21:13'},
+          { nome: 'Mesa 03', valor: 7, horario: '9:54'},
+          { nome: 'Mesa 02', valor: 22, horario: '13:23'},
+          { nome: 'Mesa 07', valor: 15.50, horario: '12:45'},
+          { nome: 'Mesa 08', valor: 8.25, horario: '23:48'},
+          { nome: 'Mesa 01', valor: 12, horario: '21:13'},
+          { nome: 'Mesa 03', valor: 7, horario: '9:54'},
+          { nome: 'Mesa 02', valor: 22, horario: '13:23'},
+          { nome: 'Mesa 07', valor: 15.50, horario: '12:45'},
+          { nome: 'Mesa 08', valor: 8.25, horario: '23:48'},
+        ],
         // grafico ultimas vendas
         value: [
         423,
@@ -232,6 +306,9 @@ export default {
         610,
         760,
           ],
+        labels: [
+          "DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"
+        ],
         // infos tabela vendas
         headers: [
         {
@@ -245,13 +322,37 @@ export default {
         { text: "ID", value: "idvenda", sortable: false },
         { text: "", value: "iconTable", sortable: false },
         ],
-        desserts: [{data: "15/10/2022", valor: 15.5, hora: "20:06", idvenda: "12342344567"}],
+        desserts: [
+          {data: "15/10/2022", valor: 15.50, hora: "10:43", idvenda: "12342344567"}, 
+          {data: "16/11/2022", valor: 16.00, hora: "21:12", idvenda: "12342344568"},
+          {data: "18/09/2022", valor: 17.50, hora: "22:45", idvenda: "12342344569"},
+          {data: "09/05/2022", valor: 20.50, hora: "17:23", idvenda: "12342344566"}
+      ],
       }
     },
     mounted(){
       this.buscarInfoEdit();
       this.buscarInfoUser();
     },
+    computed: {
+      valueMes () {
+        const divmeta = this.metaMes / 100
+        const result = this.dbMes / divmeta
+        return result
+      },
+      valueDia () {
+        const divmeta = this.metaDia / 100
+        const result = this.dbDia / divmeta
+        return result
+      },
+      valueAno () {
+        const divmeta = this.metaAno / 100
+        const result = this.dbAno / divmeta
+        return result
+      }
+
+    },
+
     methods: {
       // functions principais
       async ResetSenha(){

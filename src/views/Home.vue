@@ -10,34 +10,31 @@
           <v-icon elevation="5" color="black" class="mr-2">mdi-calendar-blank</v-icon>{{ date }}
         </v-card>
       </div>
-      <br>
-      <br>
-      <div class="ml-6 mr-6">
+      <div class="ml-6 mr-6 mt-15">
         <v-alert dense border="left" elevation="5" colored-border class="font-weight-medium" color="primary">
           Este site foi desenvolvido por estudantes de TI do IFC com o objetivo de melhorar o gerenciamento de vendas
           para lojas de açaí, um sistema simples, prático e organizado para acelerar os processos de suas vendas,
           deixando você no total controle, contando com históricos, informações de venda e listagem de produtos.
         </v-alert>
       </div>
-      <br>
-      <div class="ml-6 mr-6">
+      <div class="ml-6 mr-6 mt-10">
         <v-alert colored-border elevation="5" border="left" color="success">
           <span class="text-h5"><strong>❝Faça o que você pode, com o que você tem, onde você estiver. ❞</strong></span>
           <br>
           <span style="color:gray;margin-left:10px;">- Theodore Roosevelt</span>
         </v-alert>
       </div>
-      <br>
-      <br>
-      <!--TESTE                   TESTE                           TESTE-->
-
-      
-
   </div>
+  <v-card class="text-center mt-10 orange lighten-1" tile>
+    <v-card-title class="warning white--text"><v-icon class="mr-3" color="white">mdi-star</v-icon>Vídeo recomendado</v-card-title>
+    <div class="pa-10">
+      <iframe width="1280" height="720" src="https://www.youtube.com/embed/w4DjUB8Ln4E" title="COMO LUCRAR COM AÇAÍ | Pedebis Açaiteria #açaí #empreendedorismo #dicas #tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </v-card>
 <img class="foreground" ref="foreground" src="../assets/accai.png" />
-<v-footer padless fixed>
+<v-footer padless fixed class="blue-grey lighten-4">
     <v-col
-      class="text-center"
+      class="text-center black--text"
       cols="12"
     >
       @__adelar @jfonsakkka @victorhgca— <strong>Projeto Açaí Manager</strong>

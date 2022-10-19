@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :style="{'background-image':'url()'}">
     <div class="pa-5">
       <div style=" border-left-style: solid; border-left-color: gray; border-left-width: 8px; padding-left: 10px;" class="text-h4 my-8">Crie seus lembretes aqui!</div>
       <div style="color: gray" class="h5 mt-2 mb-4">

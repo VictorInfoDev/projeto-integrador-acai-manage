@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :style="{'background-image':'url()'}">
       <div class="pa-5">
         <div style="border-left-style:solid;border-left-color:#4CAF50;border-left-width:8px;padding-left:10px;" class="text-h4 my-8">Gerencie suas vendas aqui!</div>
         <v-alert
@@ -20,8 +20,19 @@
                     height="" width="" class=""
                     :elevation="hover ? 12 : 5"
                     :class="{ 'on-hover': hover }"
+                    
                     @click="test()"
                   >
+                    <v-expand-transition>
+                      <div
+                        v-if="hover"
+                      
+                        class="d-flex transition-fast-in-fast white v-card--reveal text-h4 success--text"
+                        style="height: 52%;"
+                      >
+                        Abrir
+                      </div>
+                    </v-expand-transition>
                     <v-card-title class="success white--text">
                       {{ comanda.nome }}
                       <v-spacer></v-spacer>
@@ -408,7 +419,7 @@ import * as fb from '@/plugins/firebase'
 export default {
     data(){
         return{
-          comandaValid: true,
+          comandaValid: "",
           nomeComanda: "",
           descricaoComanda: "",
           copoComplemento: "Aberto",
@@ -436,7 +447,15 @@ export default {
           coposItems: [ {classe: "cobertura", adicional: "opa"} ],
           comandas:[
             {nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star'},
-            {nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: ''}
+            {nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: ''},
+            {nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star'},
+            {nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: ''},
+            {nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star'},
+            {nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: ''},
+            {nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star'},
+            {nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: ''},
+            {nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star'},
+            {nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: ''},
           ]
         }
     },
@@ -487,6 +506,7 @@ export default {
         this.nomeComanda = ""
         this.descricaoComanda = ""
         this.comandaPrioridade = ""
+        this.comandaValid = true
       },
       async excluirComandaLog(){
         await deleteDoc(doc(fb.comandasCollection, this.idComandaLog));
@@ -550,6 +570,7 @@ export default {
         {
         this.infos.valorTotal -= preco
         }
+        this.comandaValidFunction();
       },
       async descontoValorComanda(){
         if(this.infos.valorTotal - this.valorDesconto < 0){
@@ -585,6 +606,7 @@ export default {
         this.buscarClassesAdicionais();
         this.buscarAdicionais();
         this.buscarAdicionaisCopo();
+        this.comandaValidFunction();
       },
       async buscarCoposAddComanda(){
         this.uid = fb.auth.currentUser.uid;
@@ -701,6 +723,7 @@ export default {
           });
         });
         this.idCopoComandaLog = ""
+        this.comandaValidFunction();
       },
       async salvarCopoComanda(){
         this.uid = fb.auth.currentUser.uid;
@@ -774,12 +797,31 @@ export default {
         });
     },
     async comandaValidFunction(){
-        if (this.nomeComanda == ""){
+        this.uid = fb.auth.currentUser.uid;
+          const produtoDocs = await fb.produtosComandaCollection
+          .where("uid", "==", this.uid)
+          .where("ID_comanda_produto", "==", this.idComandaLog)
+          .get();
+          const tamanhoDocsProdutoComanda = produtoDocs.docs.length
+
+          const coposDocs = await fb.coposComandaCollection
+          .where("uid", "==", this.uid)
+          .where("ID_comanda_copo", "==", this.idComandaLog)
+          .get();
+          const tamanhoDocsCoposComanda = coposDocs.docs.length
+        
+        if(tamanhoDocsProdutoComanda == 0 && tamanhoDocsCoposComanda == 0){
           this.comandaValid = true
         }
         else{
-          this.comandaValid = false
+            if (this.nomeComanda == ""){
+              this.comandaValid = true
+            }
+            else{
+              this.comandaValid = false
+            }
         }
+
     }
   }
 }
@@ -790,7 +832,7 @@ export default {
   align-items: center;
   bottom: 0;
   justify-content: center;
-  opacity: .5;
+  opacity: .9;
   position: absolute;
   width: 100%;
 }
