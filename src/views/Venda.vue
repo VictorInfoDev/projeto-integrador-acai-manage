@@ -104,7 +104,6 @@
                 dark
                 text
                 @click="salvarComanda(),dialogVenda = false"
-                :disabled="comandaValid"
               >
                 Criar
                 <v-icon small>mdi-plus</v-icon>
@@ -789,15 +788,6 @@ export default {
     },
     async salvarComanda(){
         this.uid = fb.auth.currentUser.uid;
-        await fb.comandasCollection.doc(this.idComandaLog).update({
-          nome_comanda: this.nomeComanda,
-          descricao_comanda: this.descricaoComanda,
-          valor_comanda: this.infos.valorTotal,
-          prioridade: this.comandaPrioridade
-        });
-    },
-    async comandaValidFunction(){
-        this.uid = fb.auth.currentUser.uid;
           const produtoDocs = await fb.produtosComandaCollection
           .where("uid", "==", this.uid)
           .where("ID_comanda_produto", "==", this.idComandaLog)
@@ -819,10 +809,18 @@ export default {
             }
             else{
               this.comandaValid = false
+              this.uid = fb.auth.currentUser.uid;
+              await fb.comandasCollection.doc(this.idComandaLog).update({
+                nome_comanda: this.nomeComanda,
+                descricao_comanda: this.descricaoComanda,
+                valor_comanda: this.infos.valorTotal,
+                prioridade: this.comandaPrioridade
+        });
             }
         }
 
-    }
+      },
+
   }
 }
 </script>
