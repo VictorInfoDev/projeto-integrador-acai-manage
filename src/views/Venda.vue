@@ -26,9 +26,8 @@
                     <v-expand-transition>
                       <div
                         v-if="hover"
-                      
                         class="d-flex transition-fast-in-fast white v-card--reveal text-h4 success--text"
-                        style="height: 52%;"
+                        style="height: 53%;"
                       >
                         Abrir
                       </div>
@@ -103,7 +102,7 @@
               <v-btn
                 dark
                 text
-                @click="salvarComanda(),dialogVenda = false"
+                @click="salvarComanda()"
               >
                 Criar
                 <v-icon small>mdi-plus</v-icon>
@@ -253,6 +252,22 @@
               >Resetar desconto</v-btn>
             </v-col>
           </v-row>
+          <div class="text-center ma-2">
+              <v-snackbar class="mb-10" dark v-model="snackbarInvalidVenda">
+                Nome da comanda nulo ou produtos insuficientes!
+                <v-spacer></v-spacer>
+                <template v-slot:action="{ attrs }">
+                  <v-btn
+                    color="success"
+                    text
+                    v-bind="attrs"
+                    @click="snackbarInvalidVenda = false"
+                  >
+                    OK
+                  </v-btn>
+                </template>
+              </v-snackbar>
+            </div>
         </v-card>
       </v-dialog>
       <v-dialog v-model="dialogAddCopo" max-width="700" persistent>
@@ -418,6 +433,7 @@ import * as fb from '@/plugins/firebase'
 export default {
     data(){
         return{
+          snackbarInvalidVenda: false,
           comandaValid: "",
           nomeComanda: "",
           descricaoComanda: "",
@@ -460,6 +476,7 @@ export default {
     },
     mounted() {
     this.buscarProdutosVenda();
+    this.buscarComandas();
     },   
     methods: {   
       async buscarProdutosVenda(){
@@ -500,12 +517,13 @@ export default {
         this.buscarCoposComanda();
         this.buscarAdicionaisCopoComanda();
         this.buscarProdutoComanda();
-        this.comandaValidFunction();
         this.infos.valorTotal = 0
         this.nomeComanda = ""
         this.descricaoComanda = ""
         this.comandaPrioridade = ""
         this.comandaValid = true
+        this.snackbarInvalidVenda = false
+        this.valorDesconto = null
       },
       async excluirComandaLog(){
         await deleteDoc(doc(fb.comandasCollection, this.idComandaLog));
@@ -801,25 +819,44 @@ export default {
           const tamanhoDocsCoposComanda = coposDocs.docs.length
         
         if(tamanhoDocsProdutoComanda == 0 && tamanhoDocsCoposComanda == 0){
-          this.comandaValid = true
+          this.snackbarInvalidVenda = true
         }
         else{
             if (this.nomeComanda == ""){
-              this.comandaValid = true
+              this.snackbarInvalidVenda = true
             }
             else{
               this.comandaValid = false
+              var numberDesconto = parseFloat(this.valorDesconto)
               this.uid = fb.auth.currentUser.uid;
               await fb.comandasCollection.doc(this.idComandaLog).update({
                 nome_comanda: this.nomeComanda,
                 descricao_comanda: this.descricaoComanda,
                 valor_comanda: this.infos.valorTotal,
-                prioridade: this.comandaPrioridade
-        });
+                prioridade: this.comandaPrioridade,
+                desconto: numberDesconto,
+              });
+              this.dialogVenda = false 
+              this.buscarComandas();
             }
         }
 
       },
+      async buscarComandas(){
+        this.uid = fb.auth.currentUser.uid;
+        this.comandas = []
+        const logComanda = await fb.comandasCollection
+          .where("uid", "==", this.uid)
+          .get();
+        for (const doc of logComanda.docs) {
+          this.comandas.push({
+            nome: doc.data().nome_comanda,
+            prioridade: doc.data().prioridade,
+            data: doc.data().data,
+            hora: doc.data().horario,
+        });
+       }
+      }
 
   }
 }
