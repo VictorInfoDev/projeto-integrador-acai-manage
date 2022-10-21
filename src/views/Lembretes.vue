@@ -18,13 +18,11 @@
                 <v-icon left color="black">mdi-account-circle-outline</v-icon>{{ lembrete.destinatario }}
               </v-chip>
 
-              <!--hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh-->
-
               <v-chip mall :ripple="false" link class="ma-1" color="black--text" outlined>
                 <v-icon left color="black">mdi-calendar-range</v-icon>{{ lembrete.data }}
               </v-chip>
               <v-card-actions>
-              <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir" icon color="" class="mr-3 pa-5">
+              <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir, idLembreteEx = lembrete.id" icon color="" class="mr-3 pa-5">
                 <v-icon color="black" fab dark class="mr-1 pa-3" large>mdi-check-bold</v-icon>
               </v-btn>
             </v-card-actions>
@@ -92,10 +90,12 @@
 </template>
 
 <script>
+import { doc, deleteDoc} from "firebase/firestore";
 import * as fb from '@/plugins/firebase'
 export default {
   data() {
     return {
+      idLembreteEx: "",
       uid: "",
       show: false,
       valid: true,
@@ -117,20 +117,29 @@ export default {
 
     async salvarLembretes() {
       this.uid = fb.auth.currentUser.uid;
-      const res = await fb.lembretesCollection.add({
+      this.errors = [];
+      if (!this.nomeLembrete) {
+        this.errors.push('O nome é obrigatório.');
+      }
+      if (!this.descricaoLembrete) {
+        this.errors.push('A idade é obrigatória.');
+      }
+      else{
+        const res = await fb.lembretesCollection.add({
           uid: this.uid,
           nome_lembrete: this.nomeLembrete,
           nome_destinatario: this.destinatarioLembrete,
           descricao: this.descricaoLembrete,
           data_lembrete: this.dataLembrete,
-      });
-      const idLembreteAdd = res.id;
-        await fb.lembretesCollection.doc(idLembreteAdd).update({
-          ID_lembrete: idLembreteAdd,
-      });
-      this.resetForm();
-      this.dialogLembrete = false
-      this.buscarLembretes();
+        });
+        const idLembreteAdd = res.id;
+          await fb.lembretesCollection.doc(idLembreteAdd).update({
+            ID_lembrete: idLembreteAdd,
+        });
+        this.resetForm();
+        this.dialogLembrete = false
+        this.buscarLembretes();   
+      }
       
     },
 
@@ -152,6 +161,7 @@ export default {
           destinatario: doc.data().nome_destinatario,
           descricao: doc.data().descricao,
           data: doc.data().data_lembrete,
+          id: doc.data().ID_lembrete
         });
       }
     },
@@ -164,7 +174,13 @@ export default {
       var data = dia + "/" + mes + "/" + ano
       this.dataLembrete = data
 
-    }
+    },
+
+    async doneLembrete(){
+      await deleteDoc(doc(fb.lembretesCollection, this.idLembreteEx));
+      this.buscarLembretes();
+      this.dialogConcluir = false
+    },
   },
 };
 </script>
