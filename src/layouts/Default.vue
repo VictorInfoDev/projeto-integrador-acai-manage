@@ -4,21 +4,33 @@
     <div>
       <v-app-bar app v-for="info in infos" :key="info.id" color="#550953">
         <v-app-bar-nav-icon @click.stop="sidebar = !sidebar" color="success"></v-app-bar-nav-icon>
-        <span class="white--text"><h2>{{ info.nome }}</h2></span>
-          <row class="ml-5">
-            <v-tabs height="62" color="success" v-model="tab" background-color="#550953" centered dark icons-and-text>
+        <span class="white--text">
+          <h2>{{ info.nome }}</h2>
+        </span>
+        <row class="ml-5">
+          <v-tabs height="62" color="success" v-model="tab" background-color="#550953" centered dark icons-and-text>
             <v-tabs-slider></v-tabs-slider>
-            <v-tab to="/"><v-icon>mdi-home</v-icon></v-tab>
-            
-            <v-tab to="/Venda"><v-icon>mdi-basket-unfill</v-icon></v-tab>
+            <v-tab to="/">
+              <v-icon>mdi-home</v-icon>
+            </v-tab>
 
-            <v-tab to="/Produtos"><v-icon>mdi-basket-plus</v-icon></v-tab>
+            <v-tab to="/Produtos">
+              <v-icon>mdi-basket-plus</v-icon>
+            </v-tab>
 
-            <v-tab to="/Lembretes"><v-icon>mdi-clipboard-outline</v-icon></v-tab>
+            <v-tab to="/Venda">
+              <v-icon>mdi-basket-unfill</v-icon>
+            </v-tab>
 
-            <v-tab to="/Info"><v-icon>mdi-equalizer</v-icon></v-tab>
+            <v-tab to="/Lembretes">
+              <v-icon>mdi-clipboard-outline</v-icon>
+            </v-tab>
+
+            <v-tab to="/Info">
+              <v-icon>mdi-equalizer</v-icon>
+            </v-tab>
           </v-tabs>
-          </row>
+        </row>
         <v-spacer></v-spacer>
         <!-- menu -->
         <v-menu transition="slide-y-transition" bottom>
@@ -121,7 +133,7 @@
 </template>
 <script>
 import * as fb from '@/plugins/firebase'
-import {getAuth} from "firebase/auth";
+import { getAuth } from "firebase/auth";
 export default {
   data() {
     return {
@@ -132,8 +144,8 @@ export default {
       infos: [],
       items: [
         { title: "Home", icon: "mdi-home", to: "/" },
-        { title: "Vendas", icon: "mdi-basket-unfill", to: "/Venda" },
         { title: "Produtos", icon: "mdi-basket", to: "/Produtos" },
+        { title: "Vendas", icon: "mdi-basket-unfill", to: "/Venda" },
         { title: "Lembretes", icon: "mdi-clipboard-outline", to: "/Lembretes" },
         { title: "Informações", icon: "mdi-equalizer", to: "/Info" },
       ],
