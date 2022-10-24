@@ -48,7 +48,7 @@
               fab
               dark
               color="primary"
-              @click.stop="dialogClassDelete = !dialogClassDelete"
+              @click.stop="buscarClassTabela()"
               ><v-icon dark>mdi-bookmark-minus</v-icon></v-btn
             >
             <v-btn
@@ -175,8 +175,6 @@
         <v-card-text>
           <v-container>
             <v-form ref="formEditar" v-model="valid" lazy-validation>
-              <v-row>
-                <v-col cols="12" sm="6" md="4">
                   <v-text-field
                     :rules="[
                       () => !!itemEdit.nomeProdutoEdit || 'Campo obrigatório',
@@ -187,8 +185,6 @@
                     required
                     v-model="itemEdit.nomeProdutoEdit"
                   ></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
                   <v-text-field
                     :rules="[
                       () => !!itemEdit.valorProdutoEdit || 'Campo obrigatório',
@@ -200,8 +196,6 @@
                     required
                     prefix="R$"
                   ></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
                   <v-select
                     :rules="[(v) => !!v || 'Campo obrigatório']"
                     append-icon="mdi-bookmark"
@@ -212,8 +206,6 @@
                     label="Classificações"
                     required
                   ></v-select>
-                </v-col>
-              </v-row>
             </v-form>
           </v-container>
         </v-card-text>
@@ -303,9 +295,6 @@
             type="warning"
             >Todos os campos devem ser preenchidos.</v-alert
           >
-          <small
-            >*faça suas classificações antes de registrar os produtos</small
-          >
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -383,6 +372,22 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <div class="text-center ma-2">
+      <v-snackbar class="mb-10" dark v-model="snackbarAlertClass">
+        Você não tem nenhuma classificação registrada!
+        <v-spacer></v-spacer>
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            color="success"
+            text
+            v-bind="attrs"
+            @click="snackbarAlertClass = false"
+          >
+            OK
+          </v-btn>
+        </template>
+      </v-snackbar>
+    </div>
   </v-app>
 </template>
 
@@ -392,6 +397,7 @@ import { doc, deleteDoc } from "firebase/firestore";
 export default {
   data() {
     return {
+      snackbarAlertClass: false,
       uid: "",
       classAd: "nao",
       configOpcao: false,
@@ -429,7 +435,6 @@ export default {
   mounted() {
     this.buscarProdutos();
     this.buscarClass();
-    this.buscarClassTabela();
     this.configOpcaoValid();
   },
   methods: {
@@ -543,7 +548,6 @@ export default {
           classeID: idclasseAdd,
         });
         this.buscarClass();
-        this.buscarClassTabela();
         this.$refs.formClass.reset();
         this.dialogClass = false;
       }
@@ -566,16 +570,27 @@ export default {
       }
     },
     async buscarClassTabela() {
+      this.dialogClassDelete = false
       this.uid = fb.auth.currentUser.uid;
-      this.classTexts = [];
-      const logTasks = await fb.classeCollection
+      const classDocs = await fb.classeCollection
         .where("uid", "==", this.uid)
         .get();
-      for (const doc of logTasks.docs) {
-        this.classTexts.push({
-          name: doc.data().classeSelect,
-          idClasse: doc.data().classeID,
-        });
+      const tamanhoDocsClass = classDocs.docs.length
+      if(tamanhoDocsClass == 0){
+        this.snackbarAlertClass = true
+      }
+      else{
+        this.classTexts = [];
+        const logTasks = await fb.classeCollection
+          .where("uid", "==", this.uid)
+          .get();
+        for (const doc of logTasks.docs) {
+          this.classTexts.push({
+            name: doc.data().classeSelect,
+            idClasse: doc.data().classeID,
+          });
+        }
+        this.dialogClassDelete = true
       }
     },
     //methods classse deletar***********************************************************************************************
