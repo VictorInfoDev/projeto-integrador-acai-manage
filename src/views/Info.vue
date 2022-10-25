@@ -228,22 +228,84 @@
       <v-dialog v-model="dialogInfoVenda" max-width="500">
         <v-card>
           <v-card-title class="success white--text">Mesa 1 <v-spacer></v-spacer><v-icon @click="dialogInfoVenda = false" color="white">mdi-close</v-icon></v-card-title>
-          <div class="ma-5 mt-2 mb-2"><h3>Informaçoes</h3></div>
-          <v-card-text class="">
-            <b>Dia:</b> 15/10/2022<br>
-            <b>Hora:</b> 20:35<br>
-            <b>Desconto:</b> R$ 5,00 <br>
-            <b>Valor total:</b> R$ 15,00 <br>
-          </v-card-text>
-          <v-divider></v-divider>
-          <div class="ma-5 mt-2 mb-2"><h3>Produtos</h3></div>
-          <v-list-item>
-          <v-list-item-content>
-              <v-list-item-title class="ml-1">Coca 2L: <span class="success--text"> R$ 2,00</span></v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-divider></v-divider>
-          <div class="ml-5 mt-2"><h3>Copos</h3></div>
+          <div class="">
+            <v-list-item class="grey lighten-5">
+              <v-list-item-content>
+                <v-list-item-title><v-icon class="mr-2" color="green">mdi-cash-multiple</v-icon>R$ 12,00</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider class="grey lighten-2"></v-divider>
+            <v-list-item class="grey lighten-5">
+              <v-list-item-content>
+                <v-list-item-title><v-icon class="mr-2" color="warning">mdi-cash-refund</v-icon>R$ 2,00</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider class="grey lighten-2"></v-divider>
+            <v-list-item class="grey lighten-5">
+              <v-list-item-content>
+                <v-list-item-title><v-icon class="mr-2" color="primary">mdi-calendar</v-icon>22/10/2022</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider class="grey lighten-2"></v-divider>
+            <v-list-item class="grey lighten-5">
+              <v-list-item-content>
+                <v-list-item-title><v-icon class="mr-2" color="primary">mdi-clock-time-four-outline</v-icon>16:19</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider class="grey lighten-2"></v-divider>
+            <v-list-item three-line class="grey lighten-5">
+              <v-list-item-content>
+                <v-list-item-title>Descrição</v-list-item-title>
+                <v-list-item-subtitle>
+                  Secondary line text Lorem ipsum dolor sit amet.
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </div>
+          <v-expansion-panels accordion>
+          <v-expansion-panel>
+            <v-expansion-panel-header disable-icon-rotate class="">
+              Produtos
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-list dense nav class="">
+                <v-list-item-group
+                  style="
+                    border-left-style: solid;
+                    border-left-color: #1976d2;
+                    border-left-width: 2px;
+                    padding-left: 10px;
+                  "
+                  color="primary"
+                >
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>Sabao <span class="success--text">R$ 4,00</span> </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>Sabao</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>Sabao</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel>
+            <v-expansion-panel-header disable-icon-rotate>
+              Copos
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+    </v-expansion-panels>
         </v-card>
       </v-dialog>
   </v-app>
