@@ -2,7 +2,18 @@
   <v-app :style="{'background-image':'url(https://static.vecteezy.com/ti/fotos-gratis/p2/6986555-moderno-soft-fade-roxo-para-rosa-gradiente-abstrato-fundo-citacoes-e-tipos-de-apresentacao-baseado-fundo-design-adequado-para-papel-de-parede-cotacoes-site-abertura-apresentacao-perfil-pessoal-foto.jpg)'}">
       <div class="pa-10">
         <v-card class="mb-5">
-          <v-card-title class="pa-7"><v-icon class="mr-2" color="red">mdi-chart-donut</v-icon> Metas de vendas <v-spacer></v-spacer><v-icon large @click="test()">mdi-pencil</v-icon></v-card-title>
+          <v-card-title class="pa-7">
+            <v-icon class="mr-2" color="red">mdi-chart-donut</v-icon> 
+            Metas de vendas 
+            <v-spacer></v-spacer>
+            <v-btn
+              text
+              color="red"
+            >
+              Editar metas
+              <v-icon>mdi-trending-up</v-icon>
+            </v-btn>
+          </v-card-title>
           <v-row class="pa-15 pt-10">
             <v-col class="text-center">
               <div class="mb-5 purple--text"><h1>Meta do dia: 10</h1></div>
@@ -229,31 +240,31 @@
         <v-card>
           <v-card-title class="success white--text">Mesa 1 <v-spacer></v-spacer><v-icon @click="dialogInfoVenda = false" color="white">mdi-close</v-icon></v-card-title>
           <div class="">
-            <v-list-item class="grey lighten-5">
+            <v-list-item class="">
               <v-list-item-content>
                 <v-list-item-title><v-icon class="mr-2" color="green">mdi-cash-multiple</v-icon>R$ 12,00</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-divider class="grey lighten-2"></v-divider>
-            <v-list-item class="grey lighten-5">
+            <v-divider class=""></v-divider>
+            <v-list-item class="">
               <v-list-item-content>
                 <v-list-item-title><v-icon class="mr-2" color="warning">mdi-cash-refund</v-icon>R$ 2,00</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-divider class="grey lighten-2"></v-divider>
-            <v-list-item class="grey lighten-5">
+            <v-divider class=""></v-divider>
+            <v-list-item class="">
               <v-list-item-content>
                 <v-list-item-title><v-icon class="mr-2" color="primary">mdi-calendar</v-icon>22/10/2022</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-divider class="grey lighten-2"></v-divider>
-            <v-list-item class="grey lighten-5">
+            <v-divider class=""></v-divider>
+            <v-list-item class="">
               <v-list-item-content>
                 <v-list-item-title><v-icon class="mr-2" color="primary">mdi-clock-time-four-outline</v-icon>16:19</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-divider class="grey lighten-2"></v-divider>
-            <v-list-item three-line class="grey lighten-5">
+            <v-divider class=""></v-divider>
+            <v-list-item three-line class="">
               <v-list-item-content>
                 <v-list-item-title>Descrição</v-list-item-title>
                 <v-list-item-subtitle>
@@ -262,6 +273,7 @@
               </v-list-item-content>
             </v-list-item>
           </div>
+          <v-divider></v-divider>
           <v-expansion-panels accordion>
           <v-expansion-panel>
             <v-expansion-panel-header disable-icon-rotate class="">

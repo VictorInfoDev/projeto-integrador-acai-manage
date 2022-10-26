@@ -29,8 +29,8 @@
                 </v-icon>
               </v-card-title>
               <v-card-text class="mt-3">
-                Horário de criação: <b>{{ comanda.hora }}</b><br>
-                Data de criação: <b>{{ comanda.data }}</b>
+                <b>Horário de criação:</b>  {{ comanda.hora }}<br>
+                <b>Data de criação:</b>  {{ comanda.data }}
               </v-card-text>
             </v-card>
           </v-hover>
@@ -427,7 +427,8 @@ export default {
         const res = await fb.comandasCollection.add({
           uid: this.uid,
           data: data,
-          horario: horario
+          horario: horario,
+          estado:"edit"
         });
         const idComanda = res.id;
         await fb.comandasCollection.doc(idComanda).update({
@@ -761,9 +762,6 @@ export default {
         else {
           this.comandaValid = false
           var numberDesconto = parseFloat(this.valorDesconto)
-          if (numberDesconto == 0) {
-            numberDesconto = "Nenhum desconto definido"
-          }
           if (this.descricaoComanda == "") {
             this.descricaoComanda = "Nenhuma descrição definida"
           }
@@ -774,6 +772,7 @@ export default {
             valor_comanda: this.infos.valorTotal,
             prioridade: this.comandaPrioridade,
             desconto: numberDesconto,
+            estado: "comanda",
           });
           this.dialogVenda = false
           this.buscarComandas();

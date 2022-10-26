@@ -3,15 +3,30 @@
     <div class="root"><img class="background" ref="background" src="../assets/accai.png" /></div>
     <div class="pa-5">
       <v-divider></v-divider>
-      <div class="ml-2 mr-2">
+      <div class="mr-2">
         <v-card outlined color="transparent" class="ml-6 mr-6 my-2" style="color:black;padding-left:3px;">
           <span elevation="5" class="text-h3"><strong elevation="5">Bem vindo</strong></span>
           <br>
-          <v-icon elevation="5" color="black" class="mr-2">mdi-calendar-blank</v-icon>{{ date }}
+          <v-icon elevation="5" color="black" class="mr-2">mdi-calendar-blank</v-icon><b>{{ date }}</b>
         </v-card>
       </div>
-      <div class="ml-6 mr-6 mt-15">
-        <v-alert dense border="left" elevation="5" colored-border class="font-weight-medium" color="primary">
+      <div class="ml-6 mr-6 mt-10">
+        <v-card class="mb-10 font-weight-bold text-h4 basil--text black--text" color="transparent" elevation="0">
+          <v-btn
+            class=""
+            fab
+            dark
+            large
+            color="#550953"
+            to="/Produtos"
+          >
+            <v-icon color="success">
+              mdi-play
+            </v-icon>
+          </v-btn>
+          Começar<span class="success--text">...</span> 
+        </v-card>
+        <v-alert dense border="left" elevation="5" colored-border class="font-weight-medium" color="#550953">
           Este site foi desenvolvido por estudantes de TI do IFC com o objetivo de melhorar o gerenciamento de vendas
           para lojas de açaí, um sistema simples, prático e organizado para acelerar os processos de suas vendas,
           deixando você no total controle, contando com históricos, informações de venda e listagem de produtos.

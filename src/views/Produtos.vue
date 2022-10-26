@@ -16,7 +16,7 @@
           produtos organizados por classificação.
         </v-alert>
       </div>
-      <v-card class="mt-8">
+      <v-card class="mt-8" outlined>
         <div class="text-h2 primary--text pa-5">Produtos</div>
         <v-divider></v-divider>
         <v-card-title>
@@ -170,16 +170,16 @@
           <v-container>
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-row>
-                <v-col cols="12" sm="6" md="4">
+                <v-col cols="12" sm="8">
                   <v-text-field :rules="[() => !!nomeProduto || 'Campo obrigatório']" :error-messages="errorMessages"
-                    append-icon="mdi-basket" label="Nome do produto" required v-model="nomeProduto"></v-text-field>
+                    append-icon="mdi-basket" label="Nome do produto, adicional ou copo" required v-model="nomeProduto"></v-text-field>
                 </v-col>
-                <v-col cols="12" sm="6" md="4">
+                <v-col cols="12" sm="4">
                   <v-text-field :rules="[() => !!valorProduto || 'Campo obrigatório']" append-icon="mdi-cash"
                     label="Valor do produto" type="number" v-model.number="valorProduto" required prefix="R$">
                   </v-text-field>
                 </v-col>
-                <v-col cols="12" sm="6" md="4">
+                <v-col cols="12" sm="12">
                   <v-select :rules="[(v) => !!v || 'Campo obrigatório']" append-icon="mdi-bookmark"
                     v-model="tipoProduto" :items="items" item-text="classeProduto" clearable label="Classificações"
                     required>
