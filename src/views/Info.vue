@@ -276,18 +276,13 @@
           <v-divider></v-divider>
           <v-expansion-panels accordion>
           <v-expansion-panel>
-            <v-expansion-panel-header disable-icon-rotate class="">
+            <v-expansion-panel-header class="">
               Produtos
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-list dense nav class="">
                 <v-list-item-group
-                  style="
-                    border-left-style: solid;
-                    border-left-color: #1976d2;
-                    border-left-width: 2px;
-                    padding-left: 10px;
-                  "
+                  style="border-left-style: solid;border-left-color: #1976d2;border-left-width: 2px;padding-left: 10px;"
                   color="primary"
                 >
                   <v-list-item>
@@ -310,7 +305,7 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
           <v-expansion-panel>
-            <v-expansion-panel-header disable-icon-rotate>
+            <v-expansion-panel-header>
               Copos
             </v-expansion-panel-header>
             <v-expansion-panel-content>

@@ -47,14 +47,6 @@
     </div>
   </v-card>
 <img class="foreground" ref="foreground" src="../assets/accai.png" />
-<v-footer padless fixed class="blue-grey lighten-4">
-    <v-col
-      class="text-center black--text"
-      cols="12"
-    >
-      @__adelar @jfonsakkka @victorhgca— <strong>Projeto Açaí Manager</strong>
-    </v-col>
-  </v-footer>
 </v-app>
 </template>
 

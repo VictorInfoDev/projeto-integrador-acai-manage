@@ -21,19 +21,41 @@
         <v-divider></v-divider>
         <v-card-title>
           <div style="background-color: #bbdefb; border-radius: 15px" align="center">
-            <v-btn class="ma-4" fab dark color="primary" @click.stop="dialogProduto = !dialogProduto">
-              <v-icon dark>mdi-basket-plus</v-icon>
-            </v-btn>
-            <v-btn class="ma-4" fab dark color="primary" @click.stop="dialogClass = !dialogClass">
-              <v-icon dark>mdi-bookmark-plus</v-icon>
-            </v-btn>
-            <v-btn class="ma-4" fab dark color="primary" @click.stop="buscarClassTabela()">
-              <v-icon dark>mdi-bookmark-minus</v-icon>
-            </v-btn>
-            <v-btn v-for="iconLog in iconsLogs" :key="iconLog.id" class="ma-4" fab dark color="primary"
-              @click="configOpcaoValid()">
-              <v-icon>{{ iconLog.icon }}</v-icon>
-            </v-btn>
+          <v-tooltip top color="primary">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn class="ma-4" fab dark color="primary" @click.stop="dialogProduto = !dialogProduto" v-bind="attrs" v-on="on">
+                <v-icon dark>mdi-basket-plus</v-icon>
+              </v-btn>
+            </template>
+            <span>Adicionar produto</span>
+          </v-tooltip>
+          
+          <v-tooltip top color="primary">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn class="ma-4" fab dark color="primary" @click.stop="dialogClass = !dialogClass" v-bind="attrs" v-on="on">
+                <v-icon dark>mdi-bookmark-plus</v-icon>
+              </v-btn>
+            </template>
+            <span>Adicionar classificação</span>
+          </v-tooltip>
+
+          <v-tooltip top color="primary">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn class="ma-4" fab dark color="primary" @click.stop="buscarClassTabela()" v-bind="attrs" v-on="on">
+                <v-icon dark>mdi-bookmark-minus</v-icon>
+              </v-btn>
+            </template>
+            <span>Deletar classificação</span>
+          </v-tooltip>
+
+          <v-tooltip top color="primary">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-for="iconLog in iconsLogs" :key="iconLog.id" class="ma-4" fab dark color="primary" @click="configOpcaoValid()" v-bind="attrs" v-on="on">
+                <v-icon>{{ iconLog.icon }}</v-icon>
+              </v-btn>
+            </template>
+            <span>{{ spanTextEdit }}</span>
+          </v-tooltip>
           </div>
           <v-spacer></v-spacer>
           <v-text-field v-model="search" append-icon="mdi-magnify" label="Procurar" single-line hide-details
@@ -82,19 +104,15 @@
             <template v-slot:default>
               <thead>
                 <tr>
-                  <th class="text-left">Classificações</th>
-                  <th class="text-right">Opções</th>
-                  <th class="text-left">ID</th>
+                  <th class="text-left">Classificação</th>
+                  <th class="text-right"></th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="classText of classTexts" :key="classText.id">
                   <td>{{ classText.name }}</td>
                   <td class="text-right">
-                    <v-icon @click="deletarClasse(classText.idClasse)" color="error">mdi-close</v-icon>
-                  </td>
-                  <td>
-                    <v-chip class="gray">{{ classText.idClasse }}</v-chip>
+                    <v-icon @click="deletarClasse(classText.id)" color="error">mdi-close</v-icon>
                   </td>
                 </tr>
               </tbody>
@@ -163,7 +181,7 @@
     <v-dialog v-model="dialogProduto" persistent max-width="700px">
       <v-card>
         <v-card-title class="primary white--text">
-          <v-icon class="mr-2" color="white">mdi-basket-plus</v-icon><span class="text-h5">Cadastrar produto</span>
+          <v-icon class="mr-2" color="white">mdi-basket-plus</v-icon><span class="text-h5">Adicionar produto</span>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -221,7 +239,7 @@
       <v-card>
         <v-card-title class="primary white--text">
           <v-icon class="mr-2" color="white">mdi-bookmark-plus</v-icon>
-          Cadastrar Classificações
+          Adicionar classificação
         </v-card-title>
         <v-divider></v-divider>
         <v-alert v-model="alertInputProdutosClass" transition="scale-transition" dismissible text type="warning"
@@ -262,6 +280,7 @@ import { doc, deleteDoc } from "firebase/firestore";
 export default {
   data() {
     return {
+      spanTextEdit: "",
       snackbarAlertClass: false,
       uid: "",
       classAd: "nao",
@@ -452,7 +471,7 @@ export default {
         for (const doc of logTasks.docs) {
           this.classTexts.push({
             name: doc.data().classeSelect,
-            idClasse: doc.data().classeID,
+            id: doc.data().classeID,
           });
         }
         this.dialogClassDelete = true
@@ -472,11 +491,13 @@ export default {
           icon: "mdi-pencil",
         });
         this.configOpcao = true;
+        this.spanTextEdit = "Habilitar edição"
       } else {
         this.iconsLogs.push({
           icon: "mdi-pencil-off",
         });
         this.configOpcao = false;
+        this.spanTextEdit = "Desabilitar edição"
       }
     },
   },

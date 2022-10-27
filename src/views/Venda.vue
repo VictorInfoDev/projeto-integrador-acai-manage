@@ -179,7 +179,9 @@
               :disabled="descontoValid" outlined label="Desconto" append-icon="mdi-send"
               @click:append="descontoValorComanda()"></v-text-field>
             <v-btn outlined class="ml-5 warning white--text" :disabled="!descontoValid" @click="resetarDesconto()">
-              Resetar desconto</v-btn>
+              Resetar desconto
+              <v-icon class="">mdi-replay</v-icon>
+            </v-btn>
           </v-col>
         </v-row>
         <div class="text-center ma-2">
