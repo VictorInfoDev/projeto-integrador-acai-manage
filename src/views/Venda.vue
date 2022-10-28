@@ -343,6 +343,7 @@ import * as fb from '@/plugins/firebase'
 export default {
   data() {
     return {
+      validnome: "null",
       snackbarInvalidCopo: false,
       snackbarAlertVenda: false,
       snackbarInvalidVenda: false,
@@ -371,19 +372,8 @@ export default {
       produtosComandas: [],
       coposRadio: [],
       copos: [],
-      coposItems: [{ classe: "cobertura", adicional: "opa" }],
-      comandas: [
-        { nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star' },
-        { nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: '' },
-        { nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star' },
-        { nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: '' },
-        { nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star' },
-        { nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: '' },
-        { nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star' },
-        { nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: '' },
-        { nome: 'Mesa 01', data: '10/10/2022', hora: '21:37', prioridade: 'mdi-star' },
-        { nome: 'Mesa 02', data: '10/10/2022', hora: '21:37', prioridade: '' },
-      ]
+      coposItems: [],
+      comandas: []
     }
   },
   mounted() {
@@ -427,10 +417,10 @@ export default {
         var horario = horas + ":" + minutos
         var data = dia + "/" + mes + "/" + ano
         const res = await fb.comandasCollection.add({
-          uid: this.uid,
+          uid: this.uid+"invalidComanda",
           data: data,
           horario: horario,
-          estado:"edit"
+          estado:"edit",
         });
         const idComanda = res.id;
         await fb.comandasCollection.doc(idComanda).update({
@@ -769,6 +759,7 @@ export default {
           }
           this.uid = fb.auth.currentUser.uid;
           await fb.comandasCollection.doc(this.idComandaLog).update({
+            uid: this.uid,
             nome_comanda: this.nomeComanda,
             descricao_comanda: this.descricaoComanda,
             valor_comanda: this.infos.valorTotal,
