@@ -17,7 +17,7 @@
               @click="test()">
               <v-expand-transition>
                 <div v-if="hover" class="d-flex transition-fast-in-fast white v-card--reveal text-h4 success--text"
-                  style="height: 53%;">
+                  style="height: 100%;">
                   Abrir
                 </div>
               </v-expand-transition>
