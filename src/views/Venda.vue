@@ -11,7 +11,7 @@
       <div class="text-h2 success--text mt-10">Comandas</div>
       <v-divider class="ma-5 ml-0"></v-divider>
       <v-row>
-        <v-col cols="12" sm="2" v-for="comanda in comandas" :key="comanda.id">
+        <v-col cols="12" sm="2" v-for="comanda in comandas" :key="comanda.id" @click="editarComanda(comanda.id)">
           <v-hover v-slot="{ hover }">
             <v-card height="" width="" class="" :elevation="hover ? 12 : 5" :class="{ 'on-hover': hover }"
               @click="test()">
@@ -48,17 +48,16 @@
     <v-dialog v-model="dialogVenda" persistent fullscreen hide-overlay transition="dialog-bottom-transition">
       <v-card>
         <v-toolbar dark color="success" tile>
-          <v-btn icon dark @click="excluirComandaLog(), dialogVenda = false">
+          <v-btn v-if="editComanda" icon dark @click="excluirComandaLog(), dialogVenda = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
-          <v-toolbar-title>Criação da comanda</v-toolbar-title>
+          <v-toolbar-title>{{ texttitle }}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-checkbox v-model="comandaPrioridade" label="Prioridade" color="orange" value="mdi-star" hide-details
             class="mr-5"></v-checkbox>
           <v-toolbar-items>
             <v-btn dark text @click="salvarComanda()">
-              Criar
-              <v-icon small>mdi-plus</v-icon>
+              {{ textbtn }}
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
@@ -343,6 +342,9 @@ import * as fb from '@/plugins/firebase'
 export default {
   data() {
     return {
+      editComanda: true,
+      texttitle: "Criação da comanda",
+      textbtn: "Criar",
       validnome: "null",
       snackbarInvalidCopo: false,
       snackbarAlertVenda: false,
@@ -408,6 +410,9 @@ export default {
       }
       else {
         this.dialogVenda = true
+        this.editComanda = true
+        this.textbtn = "Criar"
+        this.texttitle = "Criação da comanda"
         var dataAtual = new Date();
         var horas = dataAtual.getHours();
         var minutos = dataAtual.getMinutes();
@@ -516,7 +521,7 @@ export default {
     async resetarDesconto() {
       var numberDesconto = parseFloat(this.valorDesconto)
       this.infos.valorTotal += numberDesconto
-      this.valorDesconto = null
+      this.valorDesconto = 0
       this.descontoValid = false
     },
     async addCopoComanda() {
@@ -781,6 +786,7 @@ export default {
         .get();
       for (const doc of logComanda.docs) {
         this.comandas.push({
+          id: doc.data().ID_comanda,
           nome: doc.data().nome_comanda,
           prioridade: doc.data().prioridade,
           data: doc.data().data,
@@ -788,6 +794,32 @@ export default {
         });
       }
     },
+    async editarComanda(idcomanda){
+      this.uid = fb.auth.currentUser.uid;
+      this.texttitle = "Edição da comanda"
+      this.editComanda = false
+      this.textbtn = "Concluir"
+      this.idComandaLog = idcomanda
+      this.dialogVenda = true
+      this.buscarCoposComanda();
+      this.buscarAdicionaisCopoComanda();
+      this.buscarProdutoComanda();
+      const logComanda = await fb.comandasCollection
+        .where("uid", "==", this.uid)
+        .where("ID_comanda", "==", idcomanda)
+        .get();
+      for (const doc of logComanda.docs) {
+          this.nomeComanda = doc.data().nome_comanda,
+          this.comandaPrioridade = doc.data().prioridade,
+          this.descricaoComanda = doc.data().descricao_comanda,
+          this.infos.valorTotal = doc.data().valor_comanda
+          this.valorDesconto = doc.data().desconto
+      }
+      this.comandaValid = true
+      this.snackbarInvalidVenda = false
+      this.snackbarInvalidCopo = false
+      this.descontoValid = true
+    }
 
   }
 }
