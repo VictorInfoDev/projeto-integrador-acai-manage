@@ -54,7 +54,8 @@
           <v-toolbar-title>{{ texttitle }}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-checkbox v-model="comandaPrioridade" label="Prioridade" color="orange" value="mdi-star" hide-details
-            class="mr-5"></v-checkbox>
+            class="mr-5">
+          </v-checkbox>
           <v-toolbar-items>
             <v-btn dark text @click="salvarComanda()">
               {{ textbtn }}
@@ -177,10 +178,18 @@
             <v-text-field v-model="valorDesconto" class="ma-5 mt-2 mb-0" type="number" prefix="R$" color="warning"
               :disabled="descontoValid" outlined label="Desconto" append-icon="mdi-send"
               @click:append="descontoValorComanda()"></v-text-field>
-            <v-btn outlined class="ml-5 warning white--text" :disabled="!descontoValid" @click="resetarDesconto()">
-              Resetar desconto
-              <v-icon class="">mdi-replay</v-icon>
-            </v-btn>
+            <v-row class="ma-5 mt-1">
+                <v-btn outlined class="warning white--text mr-2 mb-2" :disabled="!descontoValid" @click="resetarDesconto()">
+                  Resetar desconto
+                  <v-icon class="">mdi-replay</v-icon>
+                </v-btn>
+                <v-btn class="error mr-2 mb-2" v-if="!editComanda" @click="snackbarDeleteComanda = true">
+                  excluir comanda
+                </v-btn>
+                <v-btn class="success" v-if="!editComanda">
+                  finalizar venda
+                </v-btn>
+            </v-row>
           </v-col>
         </v-row>
         <div class="text-center ma-2">
@@ -201,6 +210,18 @@
             <template v-slot:action="{ attrs }">
               <v-btn color="success" text v-bind="attrs" @click="snackbarInvalidVenda = false">
                 OK
+              </v-btn>
+            </template>
+          </v-snackbar>
+          <v-snackbar class="mb-10" dark v-model="snackbarDeleteComanda">
+            Deseja excluir a comanda?
+            <v-spacer></v-spacer>
+            <template v-slot:action="{ attrs }">
+              <v-btn class="" text v-bind="attrs" @click="snackbarDeleteComanda = false">
+                Cancelar
+              </v-btn>
+              <v-btn color="error" text v-bind="attrs" @click="snackbarDeleteComanda = false, excluirComandaLog()">
+                Sim
               </v-btn>
             </template>
           </v-snackbar>
@@ -346,6 +367,7 @@ export default {
       texttitle: "Criação da comanda",
       textbtn: "Criar",
       validnome: "null",
+      snackbarDeleteComanda: false,
       snackbarInvalidCopo: false,
       snackbarAlertVenda: false,
       snackbarInvalidVenda: false,
@@ -444,6 +466,7 @@ export default {
         this.snackbarInvalidCopo = false
         this.valorDesconto = 0
         this.descontoValid = false
+        this.snackbarDeleteComanda = false
       }
     },
     async excluirComandaLog() {
@@ -466,6 +489,8 @@ export default {
           doc.ref.delete();
         });
       });
+      this.dialogVenda = false
+      this.buscarComandas();
     },
     async addProdutoPedido(nome, preco) {
       this.uid = fb.auth.currentUser.uid;
@@ -818,6 +843,7 @@ export default {
       this.comandaValid = true
       this.snackbarInvalidVenda = false
       this.snackbarInvalidCopo = false
+      this.snackbarDeleteComanda = false
       this.descontoValid = true
     }
 
