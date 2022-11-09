@@ -131,24 +131,35 @@
       -->
     <v-dialog v-model="dialogEditar" persistent max-width="700px">
       <v-card v-for="itemEdit in Edits" :key="itemEdit.id">
-        <v-card-title class="primary white--text">
+        <v-card-title class="warning white--text">
           <v-icon class="mr-2" color="white">mdi-pencil</v-icon><span class="text-h5">Editar produto</span>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-container>
             <v-form ref="formEditar" v-model="valid" lazy-validation>
-              <v-text-field :rules="[
-                () => !!itemEdit.nomeProdutoEdit || 'Campo obrigatório',
-              ]" :error-messages="errorMessages" append-icon="mdi-basket" label="Nome do produto" required
-                v-model="itemEdit.nomeProdutoEdit"></v-text-field>
-              <v-text-field :rules="[
-                () => !!itemEdit.valorProdutoEdit || 'Campo obrigatório',
-              ]" append-icon="mdi-cash" label="Valor do produto" type="number"
-                v-model.number="itemEdit.valorProdutoEdit" required prefix="R$"></v-text-field>
-              <v-select :rules="[(v) => !!v || 'Campo obrigatório']" append-icon="mdi-bookmark"
-                v-model="itemEdit.tipoProdutoEdit" :items="items" item-text="classeProduto" clearable
-                label="Classificações" required></v-select>
+              <v-row>
+                <v-col cols="12" sm="8">
+                  <v-text-field :rules="[
+                    () => !!itemEdit.nomeProdutoEdit || 'Campo obrigatório',
+                  ]" :error-messages="errorMessages" append-icon="mdi-basket" label="Nome do produto, adicional ou copo" required
+                    v-model="itemEdit.nomeProdutoEdit">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <v-text-field :rules="[
+                    () => !!itemEdit.valorProdutoEdit || 'Campo obrigatório',
+                  ]" append-icon="mdi-cash" label="Valor do produto" type="number"
+                    v-model.number="itemEdit.valorProdutoEdit" required prefix="R$">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" sm="12">
+                  <v-select :rules="[(v) => !!v || 'Campo obrigatório']" append-icon="mdi-bookmark"
+                    v-model="itemEdit.tipoProdutoEdit" :items="items" item-text="classeProduto" clearable
+                    label="Classificações" required>
+                  </v-select>
+                </v-col>
+            </v-row>
             </v-form>
           </v-container>
         </v-card-text>
@@ -164,7 +175,7 @@
               itemEdit.quantProdutoEdit,
               itemEdit.tipoProdutoEdit
             )
-          " color="primary" elevation="2">
+          " color="warning" elevation="2">
             Salvar
           </v-btn>
         </v-card-actions>

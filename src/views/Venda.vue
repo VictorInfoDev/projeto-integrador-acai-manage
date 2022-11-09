@@ -186,7 +186,7 @@
                 <v-btn class="error mr-2 mb-2" v-if="!editComanda" @click="snackbarDeleteComanda = true">
                   excluir comanda
                 </v-btn>
-                <v-btn class="success" v-if="!editComanda">
+                <v-btn class="success" v-if="!editComanda" @click="snackbarVenda = true">
                   finalizar venda
                 </v-btn>
             </v-row>
@@ -221,6 +221,18 @@
                 Cancelar
               </v-btn>
               <v-btn color="error" text v-bind="attrs" @click="snackbarDeleteComanda = false, excluirComandaLog()">
+                Sim
+              </v-btn>
+            </template>
+          </v-snackbar>
+          <v-snackbar class="mb-10" dark v-model="snackbarVenda">
+            Deseja finalizar a venda?
+            <v-spacer></v-spacer>
+            <template v-slot:action="{ attrs }">
+              <v-btn class="" text v-bind="attrs" @click="snackbarVenda = false">
+                Cancelar
+              </v-btn>
+              <v-btn color="success" text v-bind="attrs" @click="snackbarVenda = false, concluirVenda()">
                 Sim
               </v-btn>
             </template>
@@ -371,6 +383,7 @@ export default {
       snackbarInvalidCopo: false,
       snackbarAlertVenda: false,
       snackbarInvalidVenda: false,
+      snackbarVenda: false,
       comandaValid: "",
       nomeComanda: "",
       descricaoComanda: "",
@@ -467,6 +480,7 @@ export default {
         this.valorDesconto = 0
         this.descontoValid = false
         this.snackbarDeleteComanda = false
+        this.snackbarVenda = false
       }
     },
     async excluirComandaLog() {
@@ -808,6 +822,7 @@ export default {
       this.comandas = []
       const logComanda = await fb.comandasCollection
         .where("uid", "==", this.uid)
+        .where("estado", "==", "comanda")
         .get();
       for (const doc of logComanda.docs) {
         this.comandas.push({
@@ -844,9 +859,51 @@ export default {
       this.snackbarInvalidVenda = false
       this.snackbarInvalidCopo = false
       this.snackbarDeleteComanda = false
+      this.snackbarVenda = false
       this.descontoValid = true
-    }
+    },
+    async concluirVenda(){
+      this.uid = fb.auth.currentUser.uid;
+      const produtoDocs = await fb.produtosComandaCollection
+        .where("uid", "==", this.uid)
+        .where("ID_comanda_produto", "==", this.idComandaLog)
+        .get();
+      const tamanhoDocsProdutoComanda = produtoDocs.docs.length
 
+      const coposDocs = await fb.coposComandaCollection
+        .where("uid", "==", this.uid)
+        .where("ID_comanda_copo", "==", this.idComandaLog)
+        .get();
+      const tamanhoDocsCoposComanda = coposDocs.docs.length
+
+      if (tamanhoDocsProdutoComanda == 0 && tamanhoDocsCoposComanda == 0) {
+        this.snackbarInvalidVenda = true
+      }
+      else {
+        if (this.nomeComanda == "") {
+          this.snackbarInvalidVenda = true
+        }
+        else {
+          this.comandaValid = false
+          var numberDesconto = parseFloat(this.valorDesconto)
+          if (this.descricaoComanda == "") {
+            this.descricaoComanda = "Nenhuma descrição definida"
+          }
+          this.uid = fb.auth.currentUser.uid;
+          await fb.comandasCollection.doc(this.idComandaLog).update({
+            uid: this.uid,
+            nome_comanda: this.nomeComanda,
+            descricao_comanda: this.descricaoComanda,
+            valor_comanda: this.infos.valorTotal,
+            prioridade: this.comandaPrioridade,
+            desconto: numberDesconto,
+            estado: "vendido",
+          });
+          this.dialogVenda = false
+          this.buscarComandas();
+        }
+      }
+    }
   }
 }
 </script>
