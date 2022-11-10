@@ -9,6 +9,7 @@
             <v-btn
               text
               color="red"
+              @click="dialogMetas = true"
             >
               Editar metas
               <v-icon>mdi-trending-up</v-icon>
@@ -16,7 +17,7 @@
           </v-card-title>
           <v-row class="pa-15 pt-10">
             <v-col class="text-center">
-              <div class="mb-5 purple--text"><h1>Meta do dia: 10</h1></div>
+              <div class="mb-5 purple--text"><h1>Meta do dia: {{ metaDia }}</h1></div>
               <v-progress-circular
                 :rotate="270"
                 :size="150"
@@ -28,7 +29,7 @@
               </v-progress-circular>
             </v-col>
             <v-col class="text-center">
-              <div class="mb-5 success--text"><h1>Meta do mês: 24</h1></div>
+              <div class="mb-5 success--text"><h1>Meta do mês: {{ metaMes }}</h1></div>
               <v-progress-circular
                 :rotate="270"
                 :size="150"
@@ -40,7 +41,7 @@
               </v-progress-circular>
             </v-col>
             <v-col class="text-center">
-              <div class="mb-5 orange--text"><h1>Meta do ano: 2000</h1></div>
+              <div class="mb-5 orange--text"><h1>Meta do ano: {{ metaAno }}</h1></div>
               <v-progress-circular
                 :rotate="270"
                 :size="150"
@@ -118,7 +119,7 @@
                   <tbody>
                     <tr
                       v-for="ultimas_vendas in vendas"
-                      :key="ultimas_vendas.name"
+                      :key="ultimas_vendas.id"
                     >
                       <td>{{ ultimas_vendas.nome }}</td>
                       <td>{{ ultimas_vendas.valor.toFixed(2) }}</td>
@@ -315,6 +316,47 @@
     </v-expansion-panels>
         </v-card>
       </v-dialog>
+      <v-dialog v-model="dialogMetas" max-width="500" persistent>
+        <v-card>
+          <v-card-title class="error--text">Editar metas<v-icon color="error">mdi-trending-up</v-icon></v-card-title>
+          <v-divider></v-divider>
+          <v-card-text class="mt-5">
+            <v-text-field
+            type="number"
+            v-model="metaDia"
+            label="Dia"
+            filled
+            rounded
+            color="purple"
+          ></v-text-field>
+          <v-text-field
+            type="number"
+            v-model="metaMes"
+            label="Mês"
+            filled
+            rounded
+            color="success"
+          ></v-text-field>
+          <v-text-field
+            type="number"
+            v-model="metaAno"
+            label="Ano"
+            filled
+            rounded
+            color="warning"
+          ></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn @click="dialogMetas = false">
+              cancelar
+            </v-btn>
+            <v-btn class="error" @click="salvarMetas()">
+              salvar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
   </v-app>
 </template>
 
@@ -335,13 +377,14 @@ export default {
         metaDia: 10,
         metaMes: 240,
         metaAno: 2000,
-        dbDia: 3,
-        dbMes: 24,
-        dbAno: 250,
+        dbDia: 0,
+        dbMes: 0,
+        dbAno: 0,
         gradient: gradients[5],
         gradientDirection: 'top',
         gradients,
         dialogInfoVenda: false,
+        dialogMetas: false,
         search: "",
         infos: [],
         Edits: [],
@@ -353,18 +396,7 @@ export default {
         StkEmailverificado: false,
         disabledEdit: true,
         // tabela vendaahoje
-        vendas: [
-          { nome: 'Mesa 01', valor: 12, horario: '21:13'},
-          { nome: 'Mesa 03', valor: 7, horario: '9:54'},
-          { nome: 'Mesa 02', valor: 22, horario: '13:23'},
-          { nome: 'Mesa 07', valor: 15.50, horario: '12:45'},
-          { nome: 'Mesa 08', valor: 8.25, horario: '23:48'},
-          { nome: 'Mesa 01', valor: 12, horario: '21:13'},
-          { nome: 'Mesa 03', valor: 7, horario: '9:54'},
-          { nome: 'Mesa 02', valor: 22, horario: '13:23'},
-          { nome: 'Mesa 07', valor: 15.50, horario: '12:45'},
-          { nome: 'Mesa 08', valor: 8.25, horario: '23:48'},
-        ],
+        vendas: [],
         // grafico ultimas vendas
         value: [
         423,
@@ -402,6 +434,8 @@ export default {
     mounted(){
       this.buscarInfoEdit();
       this.buscarInfoUser();
+      this.buscarProdutosHoje();
+      this.buscarMetas();
     },
     computed: {
       valueMes () {
@@ -494,6 +528,38 @@ export default {
           this.buscarInfoEdit();
           this.dialogInfo = false;
       },
+      async buscarProdutosHoje(){
+        this.uid = fb.auth.currentUser.uid;
+        this.vendas = []
+        var dataAtual = new Date();
+        var dia = dataAtual.getDate();
+        var mes = (dataAtual.getMonth() + 1);
+        var ano = dataAtual.getFullYear();
+        var data = dia + "/" + mes + "/" + ano
+        const logVendaHoje = await fb.comandasCollection
+        .where("uid","==",this.uid)
+        .where("data", "==", data)
+        .where("estado", "==", "vendido")
+        .get();
+        for (const doc of logVendaHoje.docs) {
+          this.vendas.push({
+            nome: doc.data().nome_comanda,
+            valor: doc.data().valor_comanda,
+            horario: doc.data().horario
+          })
+        }
+      },
+      async buscarMetas(){
+        this.uid = fb.auth.currentUser.uid;
+        const logMetas = await fb.perfilCollection
+        .where("owner","==",this.uid)
+        .get();
+        for (const doc of logMetas.docs) {
+          this.metaDia = doc.data().MetaDia
+          this.metaMes = doc.data().MetaMes
+          this.metaAno = doc.data().MetaAno
+        }
+      }
     },
 }
 </script>

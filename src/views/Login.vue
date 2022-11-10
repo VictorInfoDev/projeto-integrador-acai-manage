@@ -253,6 +253,9 @@ export default {
         owner: this.uid,
         nomeEmpresa: this.user.nome,
         CNPJ: this.user.cnpj,
+        MetaDia: 30,
+        MetaMes: 500,
+        MetaAno: 6000,
         });
         const idPerfil = res.id
         await fb.perfilCollection.doc(idPerfil).update({

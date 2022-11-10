@@ -838,7 +838,7 @@ export default {
       this.uid = fb.auth.currentUser.uid;
       this.texttitle = "Edição da comanda"
       this.editComanda = false
-      this.textbtn = "Concluir"
+      this.textbtn = "Salvar"
       this.idComandaLog = idcomanda
       this.dialogVenda = true
       this.buscarCoposComanda();
