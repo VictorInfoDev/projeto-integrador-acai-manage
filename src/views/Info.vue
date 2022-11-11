@@ -9,7 +9,7 @@
             <v-btn
               text
               color="red"
-              @click="dialogMetas = true"
+              @click="dialogMetas = true, buscarMetas()"
             >
               Editar metas
               <v-icon>mdi-trending-up</v-icon>
@@ -25,8 +25,9 @@
                 :value="valueDia"
                 color="purple"
               >
-                {{ valueDia }}%
+                <span v-if="!diaCheck">{{ valueDia.toFixed(2) }}%</span> <v-icon x-large color="purple" v-if="diaCheck">mdi-check</v-icon>
               </v-progress-circular>
+              <div class="mt-2 purple--text" v-if="diaCheck">{{ valueDia.toFixed(2) }}<v-icon color="purple" small>mdi-arrow-up-bold</v-icon></div>
             </v-col>
             <v-col class="text-center">
               <div class="mb-5 success--text"><h1>Meta do mês: {{ metaMes }}</h1></div>
@@ -37,8 +38,9 @@
                 :value="valueMes"
                 color="success"
               >
-                {{ valueMes }}%
+                <span v-if="!mesCheck">{{ valueMes.toFixed(2) }}%</span> <v-icon x-large color="success" v-if="mesCheck">mdi-check</v-icon>
               </v-progress-circular>
+              <div class="mt-2 success--text" v-if="mesCheck">{{ valueMes.toFixed(2) }}<v-icon color="success" small>mdi-arrow-up-bold</v-icon></div>
             </v-col>
             <v-col class="text-center">
               <div class="mb-5 orange--text"><h1>Meta do ano: {{ metaAno }}</h1></div>
@@ -49,8 +51,9 @@
                 :value="valueAno"
                 color="orange"
               >
-                {{ valueAno }}%
+                <span v-if="!anoCheck">{{ valueAno.toFixed(2) }}%</span> <v-icon x-large color="orange" v-if="anoCheck">mdi-check</v-icon>
               </v-progress-circular>
+              <div class="mt-2 orange--text" v-if="anoCheck">{{ valueAno.toFixed(2) }}<v-icon color="orange" small>mdi-arrow-up-bold</v-icon></div>
             </v-col>
           </v-row>
         </v-card>
@@ -318,7 +321,7 @@
       </v-dialog>
       <v-dialog v-model="dialogMetas" max-width="500" persistent>
         <v-card>
-          <v-card-title class="error--text">Editar metas<v-icon color="error">mdi-trending-up</v-icon></v-card-title>
+          <v-card-title class="error--text grey lighten-4">Editar metas<v-icon color="error">mdi-trending-up</v-icon></v-card-title>
           <v-divider></v-divider>
           <v-card-text class="mt-5">
             <v-text-field
@@ -348,7 +351,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click="dialogMetas = false">
+            <v-btn @click="dialogMetas = false, buscarMetas(), checkMetas()">
               cancelar
             </v-btn>
             <v-btn class="error" @click="salvarMetas()">
@@ -374,9 +377,13 @@ import { sendPasswordResetEmail, getAuth, sendEmailVerification, updateEmail } f
 export default {
     data () {
       return {
-        metaDia: 10,
-        metaMes: 240,
-        metaAno: 2000,
+        diaCheck: false,
+        mesCheck: false,
+        anoCheck: false,
+        dataHoje: "",
+        metaDia: 0,
+        metaMes: 0,
+        metaAno: 0,
         dbDia: 0,
         dbMes: 0,
         dbAno: 0,
@@ -436,6 +443,8 @@ export default {
       this.buscarInfoUser();
       this.buscarProdutosHoje();
       this.buscarMetas();
+      this.buscarVendasMetas();
+      this.checkMetas();
     },
     computed: {
       valueMes () {
@@ -536,6 +545,7 @@ export default {
         var mes = (dataAtual.getMonth() + 1);
         var ano = dataAtual.getFullYear();
         var data = dia + "/" + mes + "/" + ano
+        this.dataHoje = data
         const logVendaHoje = await fb.comandasCollection
         .where("uid","==",this.uid)
         .where("data", "==", data)
@@ -559,6 +569,82 @@ export default {
           this.metaMes = doc.data().MetaMes
           this.metaAno = doc.data().MetaAno
         }
+      },
+      async salvarMetas(){
+        this.uid = fb.auth.currentUser.uid;
+        const logMetasSave = await fb.perfilCollection
+        .where("owner","==",this.uid)
+        .get();
+        for (const doc of logMetasSave.docs) {
+          var idPerfil = doc.data().idPerfil
+        }
+        await fb.perfilCollection.doc(idPerfil).update({
+            MetaDia: this.metaDia,
+            MetaMes: this.metaMes,
+            MetaAno: this.metaAno
+          });
+        this.dialogMetas = false
+        this.buscarMetas();
+        this.checkMetas();
+      },
+      async buscarVendasMetas(){
+        var dataAtual = new Date();
+        var mes = (dataAtual.getMonth() + 1);
+        var ano = dataAtual.getFullYear();
+
+        //vendas do dia
+        this.uid = fb.auth.currentUser.uid;
+        const vendasHoje = await fb.comandasCollection
+        .where("uid", "==", this.uid)
+        .where("estado", "==", "vendido")
+        .where("data", "==", this.dataHoje)
+        .get();
+        const totalVendaHoje = vendasHoje.docs.length
+        this.dbDia = totalVendaHoje
+
+        //vendas do mes
+        const vendasDoMes = await fb.comandasCollection
+        .where("uid", "==", this.uid)
+        .where("estado", "==", "vendido")
+        .where("mes", "==", mes)
+        .where("ano", "==", ano)
+        .get();
+        const totalVendaDoMes = vendasDoMes.docs.length
+        this.dbMes = totalVendaDoMes
+
+        //vendas do ano
+        const vendasDoAno = await fb.comandasCollection
+        .where("uid", "==", this.uid)
+        .where("estado", "==", "vendido")
+        .where("ano", "==", ano)
+        .get();
+        const totalVendaDoAno = vendasDoAno.docs.length
+        this.dbAno = totalVendaDoAno
+        this.checkMetas();
+      },
+      async checkMetas(){
+        //dia
+        if(this.valueDia >= 100){
+          this.diaCheck = true
+        }
+        else{
+          this.diaCheck = false
+        }
+        //mes
+        if(this.valueMes >= 100){
+          this.mesCheck = true
+        }
+        else{
+          this.mesCheck = false
+        }
+        //ano
+        if(this.valueAno >= 100){
+          this.anoCheck = true
+        }
+        else{
+          this.anoCheck = false
+        }
+        
       }
     },
 }

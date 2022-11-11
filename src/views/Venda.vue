@@ -370,6 +370,7 @@
 
 <script>
 //import { db, doc, setDoc } from "firebase/firestore";
+import Swal from 'sweetalert2'
 import { doc, deleteDoc } from "firebase/firestore";
 import * as fb from '@/plugins/firebase'
 export default {
@@ -461,6 +462,9 @@ export default {
           data: data,
           horario: horario,
           estado:"edit",
+          dia: dia,
+          mes: mes,
+          ano: ano,
         });
         const idComanda = res.id;
         await fb.comandasCollection.doc(idComanda).update({
@@ -505,6 +509,11 @@ export default {
       });
       this.dialogVenda = false
       this.buscarComandas();
+      Swal.fire(
+        'Comanda cancelada!',
+        '',
+        'info'
+      )
     },
     async addProdutoPedido(nome, preco) {
       this.uid = fb.auth.currentUser.uid;
@@ -901,13 +910,17 @@ export default {
           });
           this.dialogVenda = false
           this.buscarComandas();
+          Swal.fire(
+            'Venda realizada com sucesso!',
+            '',
+            'success'
+          )
         }
       }
     }
   }
 }
 </script>
-
 <style>
 .v-card--reveal {
   align-items: center;
@@ -916,5 +929,8 @@ export default {
   opacity: .9;
   position: absolute;
   width: 100%;
+}
+body {
+  font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif; 
 }
 </style>
