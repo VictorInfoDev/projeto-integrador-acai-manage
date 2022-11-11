@@ -27,7 +27,7 @@
               >
                 <span v-if="!diaCheck">{{ valueDia.toFixed(2) }}%</span> <v-icon x-large color="purple" v-if="diaCheck">mdi-check</v-icon>
               </v-progress-circular>
-              <div class="mt-2 purple--text" v-if="diaCheck">{{ valueDia.toFixed(2) }}<v-icon color="purple" small>mdi-arrow-up-bold</v-icon></div>
+              <div class="mt-2 purple--text"><b>{{ dbDia }}</b><v-icon color="purple" class="ml-1" small>mdi-basket-unfill</v-icon></div>
             </v-col>
             <v-col class="text-center">
               <div class="mb-5 success--text"><h1>Meta do mês: {{ metaMes }}</h1></div>
@@ -40,7 +40,7 @@
               >
                 <span v-if="!mesCheck">{{ valueMes.toFixed(2) }}%</span> <v-icon x-large color="success" v-if="mesCheck">mdi-check</v-icon>
               </v-progress-circular>
-              <div class="mt-2 success--text" v-if="mesCheck">{{ valueMes.toFixed(2) }}<v-icon color="success" small>mdi-arrow-up-bold</v-icon></div>
+              <div class="mt-2 success--text"><b>{{ dbMes }}</b><v-icon color="success" class="ml-1" small>mdi-basket-unfill</v-icon></div>
             </v-col>
             <v-col class="text-center">
               <div class="mb-5 orange--text"><h1>Meta do ano: {{ metaAno }}</h1></div>
@@ -53,7 +53,7 @@
               >
                 <span v-if="!anoCheck">{{ valueAno.toFixed(2) }}%</span> <v-icon x-large color="orange" v-if="anoCheck">mdi-check</v-icon>
               </v-progress-circular>
-              <div class="mt-2 orange--text" v-if="anoCheck">{{ valueAno.toFixed(2) }}<v-icon color="orange" small>mdi-arrow-up-bold</v-icon></div>
+              <div class="mt-2 warning--text"><b>{{ dbAno }}</b><v-icon color="warning" class="ml-1" small>mdi-basket-unfill</v-icon></div>
             </v-col>
           </v-row>
         </v-card>

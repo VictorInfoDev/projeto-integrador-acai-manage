@@ -6,13 +6,14 @@
         <v-alert outlined type="info" color="dark">Clique em <v-icon color="">mdi-card-plus-outline</v-icon> para criar seus lembretes.</v-alert>
       </div>
       <div class="text-h2 mt-10">Lembretes</div>
-      <v-card outlined class="mt-5">
+      <v-divider class="ma-5 ml-0"></v-divider>
+      <v-card class="mt-5" color="transparent" elevation="0">
         <!--Lembretes //////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-->
-      <v-row>
+      <v-row class="mt-3">
         <v-col cols="12" sm="3" v-for="lembrete in lembretes" :key="lembrete.id">
-          <v-card elevation="3" class="ma-5 blue-grey lighten-4" tile>
-            <v-card-title class="mt-1 black--text">{{ lembrete.nome }}</v-card-title>
-            <v-card-text fixed height="300px" class="black--text">{{ lembrete.descricao }}</v-card-text>
+          <v-card elevation="3" class="blue-grey lighten-4 rounded-lg">
+            <v-card-title class="black--text blue-grey lighten-3 mb-3">{{ lembrete.nome }}</v-card-title>
+            <v-card-text height="300px" class="black--text">{{ lembrete.descricao }}</v-card-text>
 
             <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>
                 <v-icon left color="black">mdi-account-circle-outline</v-icon>{{ lembrete.destinatario }}
@@ -22,6 +23,7 @@
                 <v-icon left color="black">mdi-calendar-range</v-icon>{{ lembrete.data }}
               </v-chip>
               <v-card-actions>
+                <v-spacer></v-spacer>
               <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir, idLembreteEx = lembrete.id" icon color="" class="mr-3 pa-5">
                 <v-icon color="black" fab dark class="mr-1 pa-3" large>mdi-check-bold</v-icon>
               </v-btn>
@@ -90,6 +92,7 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2'
 import { doc, deleteDoc} from "firebase/firestore";
 import * as fb from '@/plugins/firebase'
 export default {
@@ -180,9 +183,18 @@ export default {
       await deleteDoc(doc(fb.lembretesCollection, this.idLembreteEx));
       this.buscarLembretes();
       this.dialogConcluir = false
+      Swal.fire(
+            'Lembrete concluído!',
+            '',
+            'success'
+      )
     },
   },
 };
 </script>
 
-<style></style>
+<style>
+body {
+  font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif; 
+}
+</style>
