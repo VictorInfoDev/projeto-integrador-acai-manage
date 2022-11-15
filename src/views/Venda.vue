@@ -461,6 +461,8 @@ export default {
         if(minutos < 10){minutos = "0"+minutos}
         var horario = horas + ":" + minutos
         var data = dia + "/" + mes + "/" + ano
+        var dateWeek = new Date(Date.now());
+        var weekday = dateWeek.getDay();
         const res = await fb.comandasCollection.add({
           uid: this.uid+"invalidComanda",
           data: data,
@@ -469,6 +471,7 @@ export default {
           dia: dia.toString(),
           mes: mes.toString(),
           ano: ano.toString(),
+          diaSemana: weekday,
         });
         const idComanda = res.id;
         await fb.comandasCollection.doc(idComanda).update({

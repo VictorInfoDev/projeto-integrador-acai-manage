@@ -74,7 +74,7 @@
             >
               <v-card-text>
                 <div class="text-h4 black--text">
-                   Progresso da semana
+                   Sale Line Semanal
                 </div>
               </v-card-text>
               <v-card-text>
@@ -196,7 +196,7 @@
                   <v-chip
                     :disabled="configOpcao"
                     class="primary ml-3"
-                    @click="dialogInfoVenda = true"
+                    @click="dialogInfoVenda = true, buscarInfoVendas(item.idvenda)"
                     v-bind="attrs"
                     v-on="on"
                   >
@@ -301,30 +301,30 @@
         </v-card>
       </v-dialog>
       <v-dialog v-model="dialogInfoVenda" max-width="500">
-        <v-card>
-          <v-card-title class="primary white--text">Mesa 1 <v-spacer></v-spacer><v-icon @click="dialogInfoVenda = false" color="white">mdi-close</v-icon></v-card-title>
+        <v-card v-for="itemInfo in infoVendas" :key="itemInfo.id">
+          <v-card-title class="primary white--text">{{ itemInfo.nome }}<v-spacer></v-spacer><v-icon @click="dialogInfoVenda = false" color="white">mdi-close</v-icon></v-card-title>
           <div class="">
             <v-list-item class="">
               <v-list-item-content>
-                <v-list-item-title><v-icon class="mr-2" color="green">mdi-cash-multiple</v-icon>R$ 12,00</v-list-item-title>
+                <v-list-item-title><v-icon class="mr-2" color="green">mdi-cash-multiple</v-icon>R$ {{ itemInfo.valor.toFixed(2) }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-divider class=""></v-divider>
             <v-list-item class="">
               <v-list-item-content>
-                <v-list-item-title><v-icon class="mr-2" color="warning">mdi-cash-refund</v-icon>R$ 2,00</v-list-item-title>
+                <v-list-item-title><v-icon class="mr-2" color="warning">mdi-cash-refund</v-icon>R$ {{ itemInfo.valorDesconto.toFixed(2) }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-divider class=""></v-divider>
             <v-list-item class="">
               <v-list-item-content>
-                <v-list-item-title><v-icon class="mr-2" color="primary">mdi-calendar</v-icon>22/10/2022</v-list-item-title>
+                <v-list-item-title><v-icon class="mr-2" color="primary">mdi-calendar</v-icon>{{ itemInfo.data }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-divider class=""></v-divider>
             <v-list-item class="">
               <v-list-item-content>
-                <v-list-item-title><v-icon class="mr-2" color="primary">mdi-clock-time-four-outline</v-icon>16:19</v-list-item-title>
+                <v-list-item-title><v-icon class="mr-2" color="primary">mdi-clock-time-four-outline</v-icon>{{ itemInfo.hora }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-divider class=""></v-divider>
@@ -332,7 +332,7 @@
               <v-list-item-content>
                 <v-list-item-title>Descrição</v-list-item-title>
                 <v-list-item-subtitle>
-                  Secondary line text Lorem ipsum dolor sit amet.
+                  {{ itemInfo.desc }}
                 </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
@@ -351,17 +351,13 @@
                 >
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title>Sabao <span class="success--text">R$ 4,00</span> </v-list-item-title>
+                      <v-list-item-title>Nome/<span class="success--text">Valor</span> </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
-                  <v-list-item>
+                  <v-divider></v-divider>
+                  <v-list-item v-for="itemInfoProduto in infoVendasProduto" :key="itemInfoProduto.id">
                     <v-list-item-content>
-                      <v-list-item-title>Sabao</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>Sabao</v-list-item-title>
+                      <v-list-item-title>{{ itemInfoProduto.nome }}/<span class="success--text">R$ {{ itemInfoProduto.valor.toFixed(2) }}</span> </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list-item-group>
@@ -373,7 +369,24 @@
               Copos
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              <v-list dense nav class="">
+                <v-list-item-group
+                  style="border-left-style: solid;border-left-color: purple;border-left-width: 2px;padding-left: 10px;"
+                  color="purple"
+                >
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>Nome/<span class="success--text">Valor</span> </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider></v-divider>
+                  <v-list-item v-for="itemInfoCopo in infoVendasCopo" :key="itemInfoCopo.id">
+                    <v-list-item-content>
+                      <v-list-item-title>{{ itemInfoCopo.nome }}/<span class="success--text">R$ {{ itemInfoCopo.valor.toFixed(2) }}</span> </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
             </v-expansion-panel-content>
           </v-expansion-panel>
     </v-expansion-panels>
@@ -449,6 +462,9 @@ import { sendPasswordResetEmail, getAuth, sendEmailVerification, updateEmail } f
 export default {
     data () {
       return {
+        infoVendas: [],
+        infoVendasProduto: [],
+        infoVendasCopo: [],
         anoFiltro: "",
         mesFiltro: null,
         itemsMesFiltro:['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
@@ -487,13 +503,13 @@ export default {
         vendas: [],
         // grafico ultimas vendas
         value: [
-        4,
-        6,
-        7,
-        5,
-        9,
-        6,
-        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
           ],
         labels: [
           "DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"
@@ -501,13 +517,14 @@ export default {
         // infos tabela vendas
         headers: [
         {
-          text: "Data",
+          text: "Nome pedido",
           align: "start",
           sortable: false,
-          value: "data",
+          value: "nome",
         },
-        { text: "Valor (R$)", value: "valor" },
+        { text: "Data", value: "data", sortable: false},
         { text: "Horário", value: "hora", sortable: false },
+        { text: "Valor (R$)", value: "valor" },
         { text: "ID", value: "idvenda", sortable: false },
         { text: "", value: "iconTable", sortable: false },
         ],
@@ -522,6 +539,7 @@ export default {
       this.buscarVendasMetas();
       this.checkMetas();
       this.buscarVendasTabela();
+      this.buscarDadosGrafico();
     },
     computed: {
       valueMes () {
@@ -543,6 +561,63 @@ export default {
     },
 
     methods: {
+      async buscarDadosGrafico(){
+        this.value = [];
+        for(var i = 0; i < 7; i++) {
+          const dados = await fb.comandasCollection
+          .where("uid", "==", this.uid)
+          .where("estado", "==", "vendido")
+          .where("diaSemana", "==", i)
+          .get();
+          const uni = dados.docs.length
+          this.value.push(uni)
+        }
+
+      },
+      async buscarInfoVendas(idvenda){
+        this.infoVendas = [];
+        this.infoVendasProduto = [];
+        this.infoVendasCopo = [];
+        this.uid = fb.auth.currentUser.uid;
+        const logInfoVendas = await fb.comandasCollection
+        .where("uid","==",this.uid)
+        .where("estado", "==", "vendido")
+        .where("ID_comanda", "==", idvenda)
+        .get();
+        for (const doc of logInfoVendas.docs) {
+          this.infoVendas.push({
+            nome: doc.data().nome_comanda,
+            valor: doc.data().valor_comanda,
+            valorDesconto: doc.data().desconto,
+            data: doc.data().data,
+            hora: doc.data().horario,
+            desc: doc.data().descricao_comanda
+          })
+        }
+
+        const logInfoVendasProduto = await fb.produtosComandaCollection
+        .where("uid","==",this.uid)
+        .where("ID_comanda_produto", "==", idvenda)
+        .get();
+        for (const doc of logInfoVendasProduto.docs) {
+          this.infoVendasProduto.push({
+            nome: doc.data().nome_produto_comanda,
+            valor: doc.data().preco_produto_comanda,
+          })
+        }
+
+        const logInfoVendasCopo = await fb.coposComandaCollection
+        .where("uid","==",this.uid)
+        .where("ID_comanda_copo", "==", idvenda)
+        .get();
+        for (const doc of logInfoVendasCopo.docs) {
+          this.infoVendasCopo.push({
+            nome: doc.data().nome_copo_comanda,
+            valor: doc.data().valor_copo_comanda,
+          })
+        }
+      },
+
       // functions principais
       async filtrarTabela(){
         const mesFiltroReset = this.mesFiltro
@@ -559,7 +634,11 @@ export default {
         if(this.mesFiltro == "Novembro"){this.mesFiltro = "11"}
         if(this.mesFiltro == "Dezembro"){this.mesFiltro = "12"}
         if(this.mesFiltro == null && this.anoFiltro == ""){
-          alert("Insira as informações")
+          Swal.fire(
+              'Insira o mês ou ano para filtrar!',
+              '',
+              'info'
+            )
         }
         else{
           if(this.mesFiltro == null){
@@ -573,6 +652,7 @@ export default {
             .get();
             for (const doc of logTabelaVendaFiltroAno.docs) {
               this.desserts.push({
+                nome: doc.data().nome_comanda,
                 data: doc.data().data,
                 valor: doc.data().valor_comanda,
                 hora: doc.data().horario,
@@ -597,6 +677,7 @@ export default {
             .get();
             for (const doc of logTabelaVendaFiltroMes.docs) {
               this.desserts.push({
+                nome: doc.data().nome_comanda,
                 data: doc.data().data,
                 valor: doc.data().valor_comanda,
                 hora: doc.data().horario,
@@ -624,6 +705,7 @@ export default {
             .get();
             for (const doc of logTabelaVendaFiltroAll.docs) {
               this.desserts.push({
+                nome: doc.data().nome_comanda,
                 data: doc.data().data,
                 valor: doc.data().valor_comanda,
                 hora: doc.data().horario,
@@ -652,6 +734,7 @@ export default {
         .get();
         for (const doc of logTabelaVenda.docs) {
           this.desserts.push({
+            nome: doc.data().nome_comanda,
             data: doc.data().data,
             valor: doc.data().valor_comanda,
             hora: doc.data().horario,
@@ -778,6 +861,7 @@ export default {
           this.metaMes = doc.data().MetaMes
           this.metaAno = doc.data().MetaAno
         }
+
       },
       async salvarMetas(){
         this.uid = fb.auth.currentUser.uid;
@@ -885,6 +969,7 @@ export default {
             this.buscarVendasMetas();
             this.checkMetas();
             this.buscarVendasTabela();
+            this.buscarDadosGrafico();
           }
     },
 }
