@@ -455,6 +455,10 @@ export default {
         var dia = dataAtual.getDate();
         var mes = (dataAtual.getMonth() + 1);
         var ano = dataAtual.getFullYear();
+        if(dia < 10){dia = "0"+dia}
+        if(mes < 10){mes = "0"+mes}
+        if(horas < 10){horas = "0"+horas}
+        if(minutos < 10){minutos = "0"+minutos}
         var horario = horas + ":" + minutos
         var data = dia + "/" + mes + "/" + ano
         const res = await fb.comandasCollection.add({
@@ -462,9 +466,9 @@ export default {
           data: data,
           horario: horario,
           estado:"edit",
-          dia: dia,
-          mes: mes,
-          ano: ano,
+          dia: dia.toString(),
+          mes: mes.toString(),
+          ano: ano.toString(),
         });
         const idComanda = res.id;
         await fb.comandasCollection.doc(idComanda).update({

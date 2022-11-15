@@ -184,9 +184,9 @@ export default {
       this.buscarLembretes();
       this.dialogConcluir = false
       Swal.fire(
-            'Lembrete concluído!',
-            '',
-            'success'
+        'Lembrete concluído!',
+        '',
+        'success'
       )
     },
   },

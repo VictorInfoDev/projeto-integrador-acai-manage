@@ -100,7 +100,7 @@
           </v-col>
           <v-col cols="12" sm="6">
           <v-card class="pa-5" elevation="5" height="600px">
-            <v-card-title><v-icon class="mr-2" color="warning">mdi-clipboard-text-clock-outline</v-icon>Vendas de hoje</v-card-title>
+            <v-card-title><v-icon class="mr-2" color="warning">mdi-clipboard-text-clock-outline</v-icon>Vendas de hoje<v-spacer></v-spacer><span class="success--text mr-2"><b>Total:</b></span>R$ {{ valorVendasHojeTabela.toFixed(2) }}</v-card-title>
               <v-simple-table
                 fixed-header
                 height="425px"
@@ -136,31 +136,83 @@
         <v-row>
           <v-col>
             <v-card class="pa-3" elevation="5">
-              <div class="ma-5"><h2>Histórico de vendas</h2></div>
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Procurar"
-                single-line
-                hide-details
-                class="ma-5"
-                color="purple"
-              ></v-text-field>
-              <v-data-table :headers="headers" :items="desserts" :search="search">
+              <v-card-title class="ma-2"><h3>Histórico de vendas</h3><v-spacer></v-spacer><span class="success--text mr-2"><b>Total: </b></span> R$ {{ valorVendasDaTabela.toFixed(2) }}</v-card-title>
+              <v-row class="ml-2 mr-2">
+                <v-col cols="12" sm="7">
+                  <v-text-field
+                    class="" 
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Procurar"
+                    single-line
+                    hide-details
+                    color="purple"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="2">
+                  <v-select 
+                    class="" 
+                    v-model="mesFiltro" 
+                    :items="itemsMesFiltro" 
+                    clearable label="Mês"
+                    color="purple"
+                    >
+                  </v-select>
+                </v-col>
+                <v-col cols="12" sm="2">
+                  <v-text-field
+                    class="" 
+                    v-model="anoFiltro"
+                    label="Ano"
+                    color="purple"
+                    type="number"
+                  ></v-text-field>
+                </v-col>
+                <v-col class="mt-3" cols="12" sm="1">
+                  <v-btn dark @click="filtrarTabela()">
+                    filtar
+                    <v-icon>mdi-filter-variant</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+              <v-data-table :headers="headers" :items="desserts" :search="search" class="mr-4 ml-4">
                 <template v-slot:item.idvenda="{ item }">
                   <v-chip v-model="item.idvenda" color="pink accent-1 white--text">
                     {{ item.idvenda }}
                   </v-chip>
                 </template>
                 <template v-slot:item.iconTable="{ item }">
-                <v-chip
-                  :disabled="configOpcao"
-                  class="success ml-3"
-                  @click="dialogInfoVenda = true"
-                >
-                  <v-icon v-model="item.iconTableExluir" color="white"> mdi-script-text-outline </v-icon>
-                </v-chip>
-              </template>
+
+                <v-tooltip left color="primary">
+                  <template v-slot:activator="{ on, attrs }">
+                  <v-chip
+                    :disabled="configOpcao"
+                    class="primary ml-3"
+                    @click="dialogInfoVenda = true"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon v-model="item.iconTableExluir" color="white"> mdi-script-text-outline </v-icon>
+                  </v-chip>
+                  </template>
+                <span class="white--text">Informações</span>
+                </v-tooltip>
+
+                <v-tooltip right color="error">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-chip
+                      class="error ml-3"
+                      v-bind="attrs"
+                      v-on="on"
+                      @click="idvendaDelete = item.idvenda, excluirVenda = true"
+                    >
+                      <v-icon v-model="item.iconTableExluir" color="white"> mdi-basket-remove</v-icon>
+                    </v-chip>
+                  </template>
+                  <span class="white--text">Excluir venda</span>
+                </v-tooltip>
+                </template>
+
               </v-data-table>
             </v-card>
           </v-col>
@@ -242,7 +294,7 @@
       </v-dialog>
       <v-dialog v-model="dialogInfoVenda" max-width="500">
         <v-card>
-          <v-card-title class="success white--text">Mesa 1 <v-spacer></v-spacer><v-icon @click="dialogInfoVenda = false" color="white">mdi-close</v-icon></v-card-title>
+          <v-card-title class="primary white--text">Mesa 1 <v-spacer></v-spacer><v-icon @click="dialogInfoVenda = false" color="white">mdi-close</v-icon></v-card-title>
           <div class="">
             <v-list-item class="">
               <v-list-item-content>
@@ -360,6 +412,16 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-dialog v-model="excluirVenda" persistent justify="center" max-width="400px">
+      <v-card color="blue-grey darken-2">
+        <v-card-title class="white--text">Deseja deletar a venda?<br>Você não poderá recuperar os dados!</v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text class="white--text" @click="excluirVenda = false">Não</v-btn>
+          <v-btn class="error" @click="deletarVenda(), excluirVenda = false">Excluir</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -372,11 +434,18 @@ const gradients = [
     ['purple', 'purple', 'green'],
     ['orange', 'purple', 'red'],
   ]
+import { doc, deleteDoc } from "firebase/firestore";
+import Swal from 'sweetalert2'
 import * as fb from '@/plugins/firebase'
 import { sendPasswordResetEmail, getAuth, sendEmailVerification, updateEmail } from "firebase/auth";
 export default {
     data () {
       return {
+        anoFiltro: "",
+        mesFiltro: null,
+        itemsMesFiltro:['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+        excluirVenda: false,
+        idvendaDelete: "",
         diaCheck: false,
         mesCheck: false,
         anoCheck: false,
@@ -393,6 +462,10 @@ export default {
         dialogInfoVenda: false,
         dialogMetas: false,
         search: "",
+        valorVendasHojeTabela: 0,
+        valorVendasHoje:[],
+        valorVendasTabela:[],
+        valorVendasDaTabela: 0,
         infos: [],
         Edits: [],
         dialogInfo: false,
@@ -430,12 +503,7 @@ export default {
         { text: "ID", value: "idvenda", sortable: false },
         { text: "", value: "iconTable", sortable: false },
         ],
-        desserts: [
-          {data: "15/10/2022", valor: 15.50, hora: "10:43", idvenda: "12342344567"}, 
-          {data: "16/11/2022", valor: 16.00, hora: "21:12", idvenda: "12342344568"},
-          {data: "18/09/2022", valor: 17.50, hora: "22:45", idvenda: "12342344569"},
-          {data: "09/05/2022", valor: 20.50, hora: "17:23", idvenda: "12342344566"}
-      ],
+        desserts: [],
       }
     },
     mounted(){
@@ -445,6 +513,7 @@ export default {
       this.buscarMetas();
       this.buscarVendasMetas();
       this.checkMetas();
+      this.buscarVendasTabela();
     },
     computed: {
       valueMes () {
@@ -467,6 +536,127 @@ export default {
 
     methods: {
       // functions principais
+      async filtrarTabela(){
+        const mesFiltroReset = this.mesFiltro
+        if(this.mesFiltro == "Janeiro"){this.mesFiltro = "01"}
+        if(this.mesFiltro == "Fevereiro"){this.mesFiltro = "02"}
+        if(this.mesFiltro == "Março"){this.mesFiltro = "03"}
+        if(this.mesFiltro == "Abril"){this.mesFiltro = "04"}
+        if(this.mesFiltro == "Maio"){this.mesFiltro = "05"}
+        if(this.mesFiltro == "Junho"){this.mesFiltro = "06"}
+        if(this.mesFiltro == "Julho"){this.mesFiltro = "07"}
+        if(this.mesFiltro == "Agosto"){this.mesFiltro = "08"}
+        if(this.mesFiltro == "Setembro"){this.mesFiltro = "09"}
+        if(this.mesFiltro == "Outubro"){this.mesFiltro = "10"}
+        if(this.mesFiltro == "Novembro"){this.mesFiltro = "11"}
+        if(this.mesFiltro == "Dezembro"){this.mesFiltro = "12"}
+        if(this.mesFiltro == null && this.anoFiltro == ""){
+          alert("Insira as informações")
+        }
+        else{
+          if(this.mesFiltro == null){
+            this.desserts = [];
+            this.valorVendasTabela = [];
+            this.uid = fb.auth.currentUser.uid;
+            const logTabelaVendaFiltroAno = await fb.comandasCollection
+            .where("uid","==",this.uid)
+            .where("estado", "==", "vendido")
+            .where("ano", "==", this.anoFiltro)
+            .get();
+            for (const doc of logTabelaVendaFiltroAno.docs) {
+              this.desserts.push({
+                data: doc.data().data,
+                valor: doc.data().valor_comanda,
+                hora: doc.data().horario,
+                idvenda: doc.data().ID_comanda
+              })
+              this.valorVendasTabela.push(doc.data().valor_comanda)
+            }
+            var somaTabelaAno = 0;
+            for(var i = 0; i < this.valorVendasTabela.length; i++) {
+                somaTabelaAno += this.valorVendasTabela[i];
+            }
+            this.valorVendasDaTabela = somaTabelaAno
+          }
+          if(this.anoFiltro == ""){
+            this.desserts = [];
+            this.valorVendasTabela = [];
+            this.uid = fb.auth.currentUser.uid;
+            const logTabelaVendaFiltroMes = await fb.comandasCollection
+            .where("uid","==",this.uid)
+            .where("estado", "==", "vendido")
+            .where("mes", "==", this.mesFiltro)
+            .get();
+            for (const doc of logTabelaVendaFiltroMes.docs) {
+              this.desserts.push({
+                data: doc.data().data,
+                valor: doc.data().valor_comanda,
+                hora: doc.data().horario,
+                idvenda: doc.data().ID_comanda
+              })
+              this.valorVendasTabela.push(doc.data().valor_comanda)
+            }
+            var somaTabelaMes = 0;
+            for(var i2 = 0; i2 < this.valorVendasTabela.length; i2 ++) {
+                somaTabelaMes += this.valorVendasTabela[i2];
+            }
+            this.valorVendasDaTabela = somaTabelaMes
+            this.mesFiltro = mesFiltroReset
+            }
+
+          if(this.mesFiltro != "" && this.anoFiltro != ""){
+            this.desserts = [];
+            this.valorVendasTabela = [];
+            this.uid = fb.auth.currentUser.uid;
+            const logTabelaVendaFiltroAll = await fb.comandasCollection
+            .where("uid","==",this.uid)
+            .where("estado", "==", "vendido")
+            .where("mes", "==", this.mesFiltro)
+            .where("ano", "==", this.anoFiltro)
+            .get();
+            for (const doc of logTabelaVendaFiltroAll.docs) {
+              this.desserts.push({
+                data: doc.data().data,
+                valor: doc.data().valor_comanda,
+                hora: doc.data().horario,
+                idvenda: doc.data().ID_comanda
+              })
+              this.valorVendasTabela.push(doc.data().valor_comanda)
+            }
+            var somaTabelaAll = 0;
+            for(var i3 = 0; i3 < this.valorVendasTabela.length; i3 ++) {
+                somaTabelaAll += this.valorVendasTabela[i3];
+            }
+            this.valorVendasDaTabela = somaTabelaAll
+            this.mesFiltro = mesFiltroReset
+          }
+            
+        }
+        
+      },
+      async buscarVendasTabela(){
+        this.desserts = [];
+        this.valorVendasTabela = []
+        this.uid = fb.auth.currentUser.uid;
+        const logTabelaVenda = await fb.comandasCollection
+        .where("uid","==",this.uid)
+        .where("estado", "==", "vendido")
+        .get();
+        for (const doc of logTabelaVenda.docs) {
+          this.desserts.push({
+            data: doc.data().data,
+            valor: doc.data().valor_comanda,
+            hora: doc.data().horario,
+            idvenda: doc.data().ID_comanda
+          }),
+          this.valorVendasTabela.push(doc.data().valor_comanda)
+        }
+        var somaTabela = 0;
+        for(var i = 0; i < this.valorVendasTabela.length; i++) {
+            somaTabela += this.valorVendasTabela[i];
+        }
+        this.valorVendasDaTabela = somaTabela
+      },
       async ResetSenha(){
         const auth = getAuth();
         const user = fb.auth.currentUser;
@@ -540,10 +730,13 @@ export default {
       async buscarProdutosHoje(){
         this.uid = fb.auth.currentUser.uid;
         this.vendas = []
+        this.valorVendasHoje = []
         var dataAtual = new Date();
         var dia = dataAtual.getDate();
         var mes = (dataAtual.getMonth() + 1);
         var ano = dataAtual.getFullYear();
+        if(dia < 10){dia = "0"+dia}
+        if(mes < 10){mes = "0"+mes}
         var data = dia + "/" + mes + "/" + ano
         this.dataHoje = data
         const logVendaHoje = await fb.comandasCollection
@@ -556,8 +749,14 @@ export default {
             nome: doc.data().nome_comanda,
             valor: doc.data().valor_comanda,
             horario: doc.data().horario
-          })
+          }),
+          this.valorVendasHoje.push(doc.data().valor_comanda)
         }
+        var somaHoje = 0;
+        for(var i = 0; i < this.valorVendasHoje.length; i++) {
+            somaHoje += this.valorVendasHoje[i];
+        }
+        this.valorVendasHojeTabela = somaHoje
       },
       async buscarMetas(){
         this.uid = fb.auth.currentUser.uid;
@@ -606,8 +805,8 @@ export default {
         const vendasDoMes = await fb.comandasCollection
         .where("uid", "==", this.uid)
         .where("estado", "==", "vendido")
-        .where("mes", "==", mes)
-        .where("ano", "==", ano)
+        .where("mes", "==", mes.toString())
+        .where("ano", "==", ano.toString())
         .get();
         const totalVendaDoMes = vendasDoMes.docs.length
         this.dbMes = totalVendaDoMes
@@ -616,7 +815,7 @@ export default {
         const vendasDoAno = await fb.comandasCollection
         .where("uid", "==", this.uid)
         .where("estado", "==", "vendido")
-        .where("ano", "==", ano)
+        .where("ano", "==", ano.toString())
         .get();
         const totalVendaDoAno = vendasDoAno.docs.length
         this.dbAno = totalVendaDoAno
@@ -638,17 +837,51 @@ export default {
           this.mesCheck = false
         }
         //ano
-        if(this.valueAno >= 100){
+        if(this.valueAno >= 100){ 
           this.anoCheck = true
         }
         else{
           this.anoCheck = false
         }
         
-      }
+      },
+      async deletarVenda(){
+            await deleteDoc(doc(fb.comandasCollection, this.idvendaDelete));
+            var deleteProdutos = fb.produtosComandaCollection.where("ID_comanda_produto", "==", this.idvendaDelete);
+            deleteProdutos.get().then(function (querySnapshot) {
+              querySnapshot.forEach(function (doc) {
+                doc.ref.delete();
+              });
+            });
+            var deleteCopos = fb.coposComandaCollection.where("ID_comanda_copo", "==", this.idvendaDelete);
+            deleteCopos.get().then(function (querySnapshot) {
+              querySnapshot.forEach(function (doc) {
+                doc.ref.delete();
+              });
+            });
+            var deleteAdicionais = fb.adicionaisCopoCollection.where("ID_comanda_copo", "==", this.idvendaDelete);
+            deleteAdicionais.get().then(function (querySnapshot) {
+              querySnapshot.forEach(function (doc) {
+                doc.ref.delete();
+              });
+            });
+            Swal.fire(
+              'Venda deletada!',
+              '',
+              'info'
+            )
+            this.buscarProdutosHoje();
+            this.buscarMetas();
+            this.buscarVendasMetas();
+            this.checkMetas();
+            this.buscarVendasTabela();
+          }
     },
 }
 </script>
 
 <style>
+body {
+  font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif; 
+}
 </style>
