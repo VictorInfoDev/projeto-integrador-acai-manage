@@ -138,7 +138,7 @@
             <v-card class="pa-3" elevation="5">
               <v-card-title class="ma-2"><h3>Histórico de vendas</h3><v-spacer></v-spacer><span class="success--text mr-2"><b>Total: </b></span> R$ {{ valorVendasDaTabela.toFixed(2) }}</v-card-title>
               <v-row class="ml-2 mr-2">
-                <v-col cols="12" sm="7">
+                <v-col cols="12" sm="6">
                   <v-text-field
                     class="" 
                     v-model="search"
@@ -172,6 +172,14 @@
                   <v-btn dark @click="filtrarTabela()">
                     filtar
                     <v-icon>mdi-filter-variant</v-icon>
+                  </v-btn>
+                </v-col>
+                <v-col class="mt-3" cols="12" sm="1">
+                  <v-btn
+                  outlined
+                  @click="buscarVendasTabela()"
+                  >
+                    Resetar
                   </v-btn>
                 </v-col>
               </v-row>
@@ -479,13 +487,13 @@ export default {
         vendas: [],
         // grafico ultimas vendas
         value: [
-        423,
-        446,
-        675,
-        510,
-        590,
-        610,
-        760,
+        4,
+        6,
+        7,
+        5,
+        9,
+        6,
+        5,
           ],
         labels: [
           "DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"
@@ -604,7 +612,7 @@ export default {
             this.mesFiltro = mesFiltroReset
             }
 
-          if(this.mesFiltro != "" && this.anoFiltro != ""){
+          if(this.mesFiltro != null && this.anoFiltro != ""){
             this.desserts = [];
             this.valorVendasTabela = [];
             this.uid = fb.auth.currentUser.uid;
@@ -656,6 +664,8 @@ export default {
             somaTabela += this.valorVendasTabela[i];
         }
         this.valorVendasDaTabela = somaTabela
+        this.mesFiltro = null
+        this.anoFiltro = ""
       },
       async ResetSenha(){
         const auth = getAuth();
