@@ -63,8 +63,8 @@
             <v-card-title>{{ info.nomeempresa }}</v-card-title>
             <v-card-subtitle>{{ info.email }}</v-card-subtitle>
             <v-card-text>
-                <b>CNPJ:</b>{{ info.cnpj }}<br>
                 <v-btn @click="dialogInfo = true, buscarInfoEdit()" tile class="mt-2 white--text" color="purple"><v-icon class="mr-2">mdi-pencil</v-icon> Editar</v-btn>
+                <v-btn @click="dialogInfoUsers = true, gerenciarUsers()" tile class="mt-2 white--text ml-2" color="info"><v-icon class="mr-2">mdi-account</v-icon>funcionários</v-btn>
             </v-card-text>
             <v-divider></v-divider>
             <v-card
@@ -253,11 +253,6 @@
               :disabled="disabledEdit"
             ></v-text-field>
             <v-text-field
-              v-model="Edit.cnpj"
-              label="CNPJ"
-              :disabled="disabledEdit"
-            ></v-text-field>
-            <v-text-field
               v-model="Edit.email"
               label="E-mail"
               :disabled="disabledEdit"
@@ -296,7 +291,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn @click="dialogInfo = false">Cancelar</v-btn>
-              <v-btn :disabled="disabledEdit" @click="salvarInfoEdit(Edit.cnpj, Edit.nome, Edit.id)" class="ml-3 success">Confirmar</v-btn>
+              <v-btn :disabled="disabledEdit" @click="salvarInfoEdit(Edit.nome, Edit.id)" class="ml-3 success">Confirmar</v-btn>
             </v-card-actions>
         </v-card>
       </v-dialog>
@@ -443,6 +438,43 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="dialogInfoUsers" max-width="500">
+      <v-card>
+        <v-card-title class="info white--text">Gerenciar funcionários</v-card-title>
+        <v-list-item>
+          <v-list-item-avatar>
+            <v-avatar
+              color="primary"
+              size="50"
+              class="white--text"
+            >
+              <v-icon color="white">mdi-account-tie-outline</v-icon>
+            </v-avatar>
+          </v-list-item-avatar>
+
+          <v-list-item-content>
+            <v-list-item-title>Opa</v-list-item-title>
+          </v-list-item-content>
+
+          <v-list-item-action>
+            <v-btn
+              depressed
+              small
+              @click="test()"
+            >
+              View User
+
+              <v-icon
+                color="orange darken-4"
+                right
+              >
+                mdi-open-in-new
+              </v-icon>
+            </v-btn>
+          </v-list-item-action>
+        </v-list-item>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -462,6 +494,7 @@ import { sendPasswordResetEmail, getAuth, sendEmailVerification, updateEmail } f
 export default {
     data () {
       return {
+        dialogInfoUsers: false,
         infoVendas: [],
         infoVendasProduto: [],
         infoVendasCopo: [],
@@ -561,6 +594,9 @@ export default {
     },
 
     methods: {
+      async text(){
+        
+      },
       async buscarDadosGrafico(){
         this.value = [];
         for(var i = 0; i < 7; i++) {
@@ -780,7 +816,6 @@ export default {
         for (const doc of logPerfilUser.docs) {
           this.infos.push({
             nomeempresa: doc.data().nomeEmpresa,
-            cnpj: doc.data().CNPJ,
             email: email,
           })
         }
@@ -795,7 +830,6 @@ export default {
         for (const doc of logInfoEdit.docs) {
           this.Edits.push({
             nome: doc.data().nomeEmpresa,
-            cnpj: doc.data().CNPJ,
             email: email,
             id: doc.data().idPerfil
           })
@@ -812,10 +846,9 @@ export default {
             this.emailRec = true;
         });
     },
-      async salvarInfoEdit(cnpj, nome, id){
+      async salvarInfoEdit(nome, id){
           await fb.perfilCollection.doc(id).update({
               nomeEmpresa: nome,
-              CNPJ: cnpj,
         });
           this.buscarInfoEdit();
           this.dialogInfo = false;
