@@ -22,9 +22,6 @@
             <v-list-item class="">
               <v-list-item-title class=""><strong>Email: </strong>{{ info.emailMenu }}</v-list-item-title>
             </v-list-item>
-            <v-list-item class="">
-              <v-list-item-title class=""><strong>CNPJ: </strong>{{ info.cnpjMenu }}</v-list-item-title>
-            </v-list-item>
             <v-divider></v-divider>
             <v-list-item class="" to="/Info">
               <v-list-item-title class="">
@@ -145,7 +142,6 @@ export default {
       for (const doc of logTasks.docs) {
         this.infos.push({
           nome: doc.data().nomeEmpresa,
-          cnpjMenu: doc.data().CNPJ,
           emailMenu: email
         })
       }

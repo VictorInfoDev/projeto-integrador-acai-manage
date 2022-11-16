@@ -21,6 +21,9 @@
           </div>
           <v-row class="pa-5">
           <v-col>
+            <div class="mb-5">
+              Se você for <span class="success--text">funcionário</span> de uma loja já registrada,<br> entre com o e-mail e senha que lhe forneceram.
+            </div>
             <v-form >
               <v-text-field outlined label="Email" v-model="user.email" color="success"></v-text-field>
               <v-text-field 
@@ -69,14 +72,13 @@
           <v-progress-linear color="success" :active="loadingLogin" :indeterminate="loadingLogin"></v-progress-linear>
           <v-col
               class="text-center text-h2 success--text mt-15"
-            >Registrar
+            >Registrar loja
           </v-col>
           <v-row class="pa-5">
           <v-col>
             <v-form>
               <v-text-field outlined color="success" label="Nome da loja" v-model="user.nome"></v-text-field>
               <v-text-field outlined color="success" label="Email" v-model="user.email"></v-text-field>
-              <v-text-field outlined color="success" label="CNPJ" v-model="user.cnpj"></v-text-field>
               <v-text-field 
               color="success"
               outlined
@@ -167,7 +169,7 @@ export default {
       dialogRecSenha: false,
       alertEmailRec: false,
       infos:[{email:null}],
-      user:{email:'victoragostini2019@gmail.com',cnpj:null,nome:null,password:'minhacasa2'},
+      user:{email:'victoragostini2019@gmail.com',nome:null,password:'minhacasa2'},
     }
   },
   watch: {
@@ -211,7 +213,7 @@ export default {
     },
     async criarNovaConta() {
     try{
-      if(this.user.nome == null || this.user.nome == '' || this.user.email == null || this.user.email == '' || this.user.cnpj == null || this.user.cnpj == '' || this.user.password == null || this.user.password == ''){
+      if(this.user.nome == null || this.user.nome == '' || this.user.email == null || this.user.email == '' || this.user.password == null || this.user.password == ''){
         this.invalidInfo = false
         this.alertInvalidInfo = true
       }
@@ -252,7 +254,6 @@ export default {
       const res = await fb.perfilCollection.add({            
         owner: this.uid,
         nomeEmpresa: this.user.nome,
-        CNPJ: this.user.cnpj,
         MetaDia: 30,
         MetaMes: 500,
         MetaAno: 6000,
