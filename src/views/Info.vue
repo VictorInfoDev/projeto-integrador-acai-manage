@@ -438,43 +438,62 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="dialogInfoUsers" max-width="500">
+    <v-dialog v-model="dialogInfoUsers" max-width="550">
       <v-card>
-        <v-card-title class="info white--text">Gerenciar funcionários</v-card-title>
-        <v-list-item>
+        <v-card-title class="info white--text"><v-icon color="white" class="mr-2">mdi-account</v-icon> Gerenciar funcionários</v-card-title>
+        <v-row class="ma-3 mb-0">
+          <v-chip color=""><b>Código de solicitação:</b><span class="ml-1">{{ uid }}</span></v-chip>
+          <v-chip @click="test()" class="ml-2">Copiar <v-icon small class="ml-1">mdi-content-copy</v-icon></v-chip>
+        </v-row>
+        <div class="ma-3 ml-5 mt-5"><h4>Solicitações</h4></div>
+        <v-divider class="ma-3 ml-5 mb-0"></v-divider>
+        <v-list-item class="ml-1">
           <v-list-item-avatar>
-            <v-avatar
-              color="primary"
-              size="50"
-              class="white--text"
-            >
+            <v-avatar  color="#212121" size="50" class="white--text">
               <v-icon color="white">mdi-account-tie-outline</v-icon>
             </v-avatar>
           </v-list-item-avatar>
-
           <v-list-item-content>
-            <v-list-item-title>Opa</v-list-item-title>
+            <v-list-item-title><b>João Kleber</b></v-list-item-title>
           </v-list-item-content>
-
           <v-list-item-action>
-            <v-btn
-              depressed
-              small
-              @click="test()"
-            >
-              View User
-
-              <v-icon
-                color="orange darken-4"
-                right
-              >
-                mdi-open-in-new
-              </v-icon>
-            </v-btn>
+            <v-row class="pa-2">
+              <v-btn depressed small color="success">aceitar<v-icon color="white" right>mdi-account-check</v-icon></v-btn>
+              <v-btn class="ml-2" depressed small color="error"><v-icon color="white">mdi-close</v-icon></v-btn>
+            </v-row>
+          </v-list-item-action>
+        </v-list-item>
+        <div class="ma-3 ml-5 mt-10"><h4>Funcionários</h4></div>
+        <v-divider class="ma-3 ml-5 mb-0"></v-divider>
+        <v-list-item class="ml-1">
+          <v-list-item-avatar>
+            <v-avatar  color="#212121" size="50" class="white--text">
+              <v-icon color="white">mdi-account-tie-outline</v-icon>
+            </v-avatar>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title><b>Felipe Alberto</b></v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-row class="pa-2">
+              <v-btn depressed small color="info">Perfil<v-icon color="white" right>mdi-open-in-new</v-icon></v-btn>
+              <v-btn class="ml-2" depressed small color="error"><v-icon color="white">mdi-account-remove</v-icon></v-btn>
+            </v-row>
           </v-list-item-action>
         </v-list-item>
       </v-card>
     </v-dialog>
+    <div class="">
+      <v-snackbar class="mb-10" dark v-model="snackbarCopy">
+        Código de solicitação copiado!
+        <v-spacer></v-spacer>
+        <template v-slot:action="{ attrs }">
+          <v-btn color="info" text v-bind="attrs" @click="snackbarCopy = false">
+            OK
+          </v-btn>
+        </template>
+      </v-snackbar>
+  </div>
   </v-app>
 </template>
 
@@ -494,6 +513,8 @@ import { sendPasswordResetEmail, getAuth, sendEmailVerification, updateEmail } f
 export default {
     data () {
       return {
+        snackbarCopy: false,
+        uid: "",
         dialogInfoUsers: false,
         infoVendas: [],
         infoVendasProduto: [],
@@ -594,8 +615,9 @@ export default {
     },
 
     methods: {
-      async text(){
-        
+      async test(){
+        await navigator.clipboard.writeText(this.uid)
+        this.snackbarCopy = true
       },
       async buscarDadosGrafico(){
         this.value = [];
