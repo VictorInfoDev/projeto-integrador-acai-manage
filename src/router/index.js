@@ -49,13 +49,27 @@ const routes = [
       name: 'Login',
       component: () => import('../views/Login.vue')
     },
+   ]
+ },
+ {
+  path: '/',
+  component: () => import('@/layouts/DefaultFunc'),
+  meta: {
+    requiresAuth: true
+  },
+  children: [
     {
       path: '/alocar',
       name: 'Alocar',
       component: () => import('../views/Alocar.vue')
     },
-   ]
- },
+    {
+      path: '/VendaFunc',
+      name: 'VendaFunc',
+      component: () => import('../views/VendaFunc.vue')
+    },
+  ]
+}
 ]
 
 const router = new VueRouter({
