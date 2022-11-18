@@ -8,7 +8,7 @@
           --
           --
           --
-          -->     
+          -->
           <v-card dark class="mx-auto my-12" max-width="500" elevation="24"  v-if="loginValid" color="#550953">
           <v-img src="../assets/logoSite.png" height="250"></v-img>
           <v-divider></v-divider>
@@ -21,11 +21,8 @@
           </div>
           <v-row class="pa-5">
           <v-col>
-            <div class="mb-5">
-              Se você for <span class="success--text">funcionário</span> de uma loja já registrada,<br> entre com o e-mail e senha que lhe forneceram.
-            </div>
             <v-form >
-              <v-text-field outlined label="Email" v-model="user.email" color="success"></v-text-field>
+              <v-text-field outlined label="Email" v-model="user.email" color="success" @keydown.enter="login()"></v-text-field>
               <v-text-field 
               color="success"
               outlined
@@ -34,6 +31,7 @@
               :type="show ? 'text' : 'password'"
               :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
               @click:append="show = !show"
+              @keydown.enter="login()"
               ></v-text-field>
             <v-alert
               transition="scale-transition"
@@ -52,8 +50,9 @@
               type="warning"
             >Usuário ou senha inválidos.</v-alert>
             <v-btn class="ma-2" outlined color="white" @click="reset">Cancelar</v-btn>
-            <v-btn outlined color="primary" @click="login()" >Login</v-btn><br>
-            <v-btn text color="success" class="text-decoration-underline" @click="registerValid = true, loginValid = false">Registrar</v-btn><br>
+            <v-btn outlined color="primary" @click="login()">Login</v-btn><br>
+            <v-btn text color="success" class="text-decoration-underline" @click="registerValid = true, loginValid = false">Registrar loja</v-btn><br>
+            <v-btn text color="info" class="text-decoration-underline" @click="registerValid = false, loginValid = false, registerFuncionario = true, tipouserloja = !tipouserloja">Cadastrar-se como funcionário</v-btn><br>
             <v-btn text color="primaryy" class="text-decoration-underline" @click="dialogRecSenha = true">Recuperar senha</v-btn>
             </v-form>
           </v-col>
@@ -105,14 +104,58 @@
               type="warning"
             >Preencha todos os campos.</v-alert>
             <v-btn outlined class="ma-2" color="white" @click="reset">Cancelar</v-btn>
-            <v-btn outlined color="green" @click="criarNovaConta()" style="color:white">Registrar</v-btn><br>
+            <v-btn outlined color="green" @click="criarNovaConta(), registerValid = false, registerFuncionario = false, loginValid = true" style="color:white">Registrar</v-btn><br>
             <v-btn text color="info" class="ml-2 text-decoration-underline" @click="registerValid = false, loginValid = true">Login</v-btn>
             </v-form>
           </v-col>
           </v-row>
           </v-card>
+          <v-card dark class="mx-auto my-12" max-width="500" v-if="registerFuncionario" elevation="24" color="">
+            <v-img src="../assets/iconfunc.png" height="250"></v-img>
+            <v-divider class=""></v-divider>
+            <v-progress-linear color="white" :active="loadingLogin" :indeterminate="loadingLogin"></v-progress-linear>
+            <v-col
+                class="text-center text-h3 white--text mt-15"
+              >Cadastro de funcionário
+            </v-col>
+            <v-form class="ma-5">
+              <v-text-field outlined color="white" label="Nome completo" v-model="user.nome"></v-text-field>
+              <v-text-field outlined color="white" label="Email" v-model="user.email"></v-text-field>
+              <v-text-field 
+              color="white"
+              outlined
+              label="Senha"
+              v-model="user.password"
+              :type="show ? 'text' : 'password'"
+              :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+              @click:append="show = !show"
+              ></v-text-field>
+            <v-alert
+              transition="scale-transition"
+              v-model="userExiste"
+              color="warning"
+              dismissible
+              outlined
+              type="warning"
+            >Este email já está em uso.</v-alert>
+            <v-alert
+              transition="scale-transition"
+              v-model="alertInvalidInfo"
+              color="warning"
+              dismissible
+              outlined
+              type="warning"
+            >Preencha todos os campos.</v-alert>
+            <v-btn text class="ma-2" color="white" @click="reset">Cancelar</v-btn>
+            <v-btn outlined color="white" @click="criarNovaConta(), registerValid = false, registerFuncionario = false, loginValid = true" style="color:white">Cadastrar</v-btn><br>
+            <v-btn text color="info" class="ml-2 text-decoration-underline mb-5" @click="registerValid = false, registerFuncionario = false, loginValid = true, tipouserloja = !tipouserloja">Login</v-btn>
+            </v-form>
+            
+          </v-card>
         </v-container>
       </v-container>
+
+
       <v-dialog v-model="dialogRecSenha" max-width="500">
         <v-card v-for="email in infos" :key="email.id">
           <v-card-title>Digite o e-mail da sua conta:</v-card-title>
@@ -156,6 +199,8 @@ import { sendPasswordResetEmail, getAuth } from "firebase/auth";
 export default {
   data(){
     return{
+      tipouserloja: true,
+      registerFuncionario: false,
       alertEmailRecError: false,
       alertInvalidInfo: false,
       invalidInfo:false,
@@ -169,7 +214,7 @@ export default {
       dialogRecSenha: false,
       alertEmailRec: false,
       infos:[{email:null}],
-      user:{email:'victoragostini2019@gmail.com',nome:null,password:'minhacasa2'},
+      user:{email:'victorhugoagostini777@gmail.com',nome:null,password:'minhacasa2'},
     }
   },
   watch: {
@@ -189,7 +234,15 @@ export default {
           this.user.password
         );
         this.loadingLogin = true
-        this.$router.push({ name: "Home" });
+        this.produtosVenda = [];
+        const logTipoUser = await fb.perfilCollection
+          .where("email", "==", this.user.email)
+          .get();
+        for (const doc of logTipoUser.docs) {
+         this.tipouserloja = doc.data().admin
+        }
+        if(this.tipouserloja == true){this.$router.push({ name: "Home" });}
+        else{this.$router.push({ name: "Alocar" });}
       } catch (error) {
         const errorCode = error.code;
         switch (errorCode) {
@@ -225,8 +278,6 @@ export default {
         this.user.email,
         this.user.password
       );
-      this.loadingLogin = true
-      this.login();
       this.registrarPerfil()
       }
       else{
@@ -251,18 +302,35 @@ export default {
     },
     async registrarPerfil(){
       this.uid = fb.auth.currentUser.uid;
-      const res = await fb.perfilCollection.add({            
+      if(this.tipouserloja == true){
+        const res = await fb.perfilCollection.add({            
         owner: this.uid,
-        nomeEmpresa: this.user.nome,
+        nome: this.user.nome,
+        admin: this.tipouserloja,
         MetaDia: 30,
         MetaMes: 500,
         MetaAno: 6000,
+        email: this.user.email
         });
         const idPerfil = res.id
         await fb.perfilCollection.doc(idPerfil).update({
           idPerfil: idPerfil,
-      });
+        });
         this.user = {}
+      } 
+      else{
+        const res = await fb.perfilCollection.add({            
+        owner: this.uid,
+        nome: this.user.nome,
+        admin: this.tipouserloja,
+        email: this.user.email
+        });
+        const idPerfil = res.id
+        await fb.perfilCollection.doc(idPerfil).update({
+          idPerfil: idPerfil,
+        });
+        this.user = {}
+      }
     },
     async sendEmaiLRec(emailrec){
         if(emailrec == null || emailrec == ''){

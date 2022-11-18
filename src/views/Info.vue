@@ -442,9 +442,10 @@
       <v-card>
         <v-card-title class="info white--text"><v-icon color="white" class="mr-2">mdi-account</v-icon> Gerenciar funcionários</v-card-title>
         <v-row class="ma-3 mb-0">
-          <v-chip color=""><b>Código de solicitação:</b><span class="ml-1">{{ uid }}</span></v-chip>
+          <v-chip color=""><b>Código de loja:</b><span class="ml-1">{{ uid }}</span></v-chip>
           <v-chip @click="test()" class="ml-2">Copiar <v-icon small class="ml-1">mdi-content-copy</v-icon></v-chip>
         </v-row>
+        <div class="ma-3 ml-4 mt-2">Este código será usado para os funcionários se alocarem a sua loja!</div>
         <div class="ma-3 ml-5 mt-5"><h4>Solicitações</h4></div>
         <v-divider class="ma-3 ml-5 mb-0"></v-divider>
         <v-list-item class="ml-1">
@@ -463,7 +464,7 @@
             </v-row>
           </v-list-item-action>
         </v-list-item>
-        <div class="ma-3 ml-5 mt-10"><h4>Funcionários</h4></div>
+        <div class="ma-3 ml-5 mt-10"><h4>Funcionários alocados</h4></div>
         <v-divider class="ma-3 ml-5 mb-0"></v-divider>
         <v-list-item class="ml-1">
           <v-list-item-avatar>
@@ -837,7 +838,7 @@ export default {
         const email = user.email;
         for (const doc of logPerfilUser.docs) {
           this.infos.push({
-            nomeempresa: doc.data().nomeEmpresa,
+            nomeempresa: doc.data().nome,
             email: email,
           })
         }
@@ -851,7 +852,7 @@ export default {
         const email = user.email;
         for (const doc of logInfoEdit.docs) {
           this.Edits.push({
-            nome: doc.data().nomeEmpresa,
+            nome: doc.data().nome,
             email: email,
             id: doc.data().idPerfil
           })
@@ -870,7 +871,7 @@ export default {
     },
       async salvarInfoEdit(nome, id){
           await fb.perfilCollection.doc(id).update({
-              nomeEmpresa: nome,
+              nome: nome,
         });
           this.buscarInfoEdit();
           this.dialogInfo = false;

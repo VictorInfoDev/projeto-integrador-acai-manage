@@ -141,7 +141,7 @@ export default {
       const logTasks = await fb.perfilCollection.where("owner", "==", this.uid).get();
       for (const doc of logTasks.docs) {
         this.infos.push({
-          nome: doc.data().nomeEmpresa,
+          nome: doc.data().nome,
           emailMenu: email
         })
       }
