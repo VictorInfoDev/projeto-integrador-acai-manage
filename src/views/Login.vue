@@ -241,8 +241,16 @@ export default {
         for (const doc of logTipoUser.docs) {
          this.tipouserloja = doc.data().admin
         }
+        this.uid = fb.auth.currentUser.uid;
+            const logConviteEstado = await fb.perfilCollection
+            .where("owner", "==", this.uid)
+            .get();
+            for (const doc of logConviteEstado.docs) {
+                this.estadoConvite = doc.data().conviteLoja
+        }
         if(this.tipouserloja == true){this.$router.push({ name: "Home" });}
-        else{this.$router.push({ name: "Alocar" });}
+        if(this.tipouserloja == false && this.estadoConvite == "aceito"){this.$router.push({ name: "VendaFunc" });}
+        if(this.tipouserloja == false && this.estadoConvite != "aceito"){this.$router.push({ name: "Alocar" });}
       } catch (error) {
         const errorCode = error.code;
         switch (errorCode) {
@@ -323,7 +331,8 @@ export default {
         owner: this.uid,
         nome: this.user.nome,
         admin: this.tipouserloja,
-        email: this.user.email
+        email: this.user.email,
+        conviteLoja: "",
         });
         const idPerfil = res.id
         await fb.perfilCollection.doc(idPerfil).update({

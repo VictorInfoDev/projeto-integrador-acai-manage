@@ -5,6 +5,7 @@
             <v-spacer></v-spacer>
             <v-icon class="mr-3" color="white">mdi-email</v-icon>
             <span class="text-h5 white--text">victorhugoagostini777@gmail.com</span>
+            <v-btn to="/login" icon class="ml-2" color="white"><v-icon large>mdi-exit-to-app</v-icon></v-btn>
         </v-app-bar>
         <v-main>
             <router-view></router-view>

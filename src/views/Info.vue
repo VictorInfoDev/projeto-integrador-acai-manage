@@ -439,7 +439,7 @@
       </v-card>
     </v-dialog>
     <v-dialog v-model="dialogInfoUsers" max-width="550">
-      <v-card>
+      <v-card class="pb-5">
         <v-card-title class="info white--text"><v-icon color="white" class="mr-2">mdi-account</v-icon> Gerenciar funcionários</v-card-title>
         <v-row class="ma-3 mb-0">
           <v-chip color=""><b>Código de loja:</b><span class="ml-1">{{ uid }}</span></v-chip>
@@ -448,32 +448,32 @@
         <div class="ma-3 ml-4 mt-2">Este código será usado para os funcionários se alocarem a sua loja!</div>
         <div class="ma-3 ml-5 mt-5"><h4>Solicitações</h4></div>
         <v-divider class="ma-3 ml-5 mb-0"></v-divider>
-        <v-list-item class="ml-1">
+        <v-list-item class="ml-1" v-for="account in accountsInv" :key="account.id">
           <v-list-item-avatar>
             <v-avatar  color="#212121" size="50" class="white--text">
               <v-icon color="white">mdi-account-tie-outline</v-icon>
             </v-avatar>
           </v-list-item-avatar>
           <v-list-item-content>
-            <v-list-item-title><b>João Kleber</b></v-list-item-title>
+            <v-list-item-title><b>{{ account.nome }}</b></v-list-item-title>
           </v-list-item-content>
           <v-list-item-action>
             <v-row class="pa-2">
-              <v-btn depressed small color="success">aceitar<v-icon color="white" right>mdi-account-check</v-icon></v-btn>
-              <v-btn class="ml-2" depressed small color="error"><v-icon color="white">mdi-close</v-icon></v-btn>
+              <v-btn @click="aceitarFunc(account.id)" depressed small color="success">aceitar<v-icon color="white" right>mdi-account-check</v-icon></v-btn>
+              <v-btn @click="rejeitarFunc(account.id)" class="ml-2" depressed small color="error"><v-icon color="white">mdi-close</v-icon></v-btn>
             </v-row>
           </v-list-item-action>
         </v-list-item>
         <div class="ma-3 ml-5 mt-10"><h4>Funcionários alocados</h4></div>
         <v-divider class="ma-3 ml-5 mb-0"></v-divider>
-        <v-list-item class="ml-1">
+        <v-list-item class="ml-1" v-for="funcionario in funcionarios" :key="funcionario.id">
           <v-list-item-avatar>
             <v-avatar  color="#212121" size="50" class="white--text">
               <v-icon color="white">mdi-account-tie-outline</v-icon>
             </v-avatar>
           </v-list-item-avatar>
           <v-list-item-content>
-            <v-list-item-title><b>Felipe Alberto</b></v-list-item-title>
+            <v-list-item-title><b>{{ funcionario.nome }}</b></v-list-item-title>
           </v-list-item-content>
           <v-list-item-action>
             <v-row class="pa-2">
@@ -547,6 +547,8 @@ export default {
         valorVendasDaTabela: 0,
         infos: [],
         Edits: [],
+        accountsInv: [],
+        funcionarios: [],
         dialogInfo: false,
         emailRec: false,
         emailRec2: false,
@@ -587,6 +589,7 @@ export default {
       }
     },
     mounted(){
+      this.gerenciarUsers();
       this.buscarInfoEdit();
       this.buscarInfoUser();
       this.buscarProdutosHoje();
@@ -616,6 +619,45 @@ export default {
     },
 
     methods: {
+      async aceitarFunc(funcID){
+        this.uid = fb.auth.currentUser.uid;
+        await fb.perfilCollection.doc(funcID).update({
+          conviteLoja: "aceito",
+          alocado: this.uid,
+        });
+        this.gerenciarUsers();
+      },
+      async rejeitarFunc(funcID){
+        await fb.perfilCollection.doc(funcID).update({
+          conviteLoja: "",
+        });
+        this.gerenciarUsers();
+      },
+      async gerenciarUsers(){
+        //buscar convites
+        this.accountsInv = []
+        const logAccountsInv = await fb.perfilCollection
+        .where("conviteLoja","==",this.uid)
+        .get();
+        for (const doc of logAccountsInv.docs) {
+          this.accountsInv.push({
+            nome: doc.data().nome,
+            id: doc.data().idPerfil
+          })
+        }
+
+        //buscar funcionários
+        this.funcionarios = []
+        const logFuncionarios = await fb.perfilCollection
+        .where("alocado","==",this.uid)
+        .get();
+        for (const doc of logFuncionarios.docs) {
+          this.funcionarios.push({
+            nome: doc.data().nome,
+            id: doc.data().idPerfil
+          })
+        }
+      },
       async test(){
         await navigator.clipboard.writeText(this.uid)
         this.snackbarCopy = true

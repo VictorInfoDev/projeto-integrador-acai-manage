@@ -1,8 +1,10 @@
 <template>
     <v-app :style="{ 'background-image': 'url()' }">
       <div class="pa-5">
+        <v-icon large color="success" class="mb-2">mdi-store</v-icon><span class="ml-3 text-h5 success--text">Açaí Victor</span>
+        <v-divider class="mt-2"></v-divider>
         <div style="border-left-style:solid;border-left-color:#4CAF50;border-left-width:8px;padding-left:10px;"
-          class="text-h4 my-8">Gerencie suas vendas aqui!</div>
+          class="text-h4 my-8">Olá funcionário, gerencie suas comandas aqui!</div>
         <v-alert outlined type="info" color="success">
           Clique em <v-icon color="success">mdi-plus-circle</v-icon> para criar seus pedidos ou realizar uma venda.
         </v-alert>
@@ -356,7 +358,7 @@
       </v-dialog>
       <div class="text-center ma-2">
         <v-snackbar class="mb-10" dark v-model="snackbarAlertVenda">
-          Você não tem produtos registrados!
+          Sua loja não tem produtos registrados!
           <v-spacer></v-spacer>
           <template v-slot:action="{ attrs }">
             <v-btn color="success" text v-bind="attrs" @click="snackbarAlertVenda = false">
@@ -376,6 +378,7 @@
   export default {
     data() {
       return {
+        uid: "",
         editComanda: true,
         texttitle: "Criação da comanda",
         textbtn: "Criar",
@@ -415,16 +418,21 @@
       }
     },
     mounted() {
-      this.buscarProdutosVenda();
+      this.uidLoja();
       this.buscarComandas();
-      this.buscarCodLoja();
+      this.buscarProdutosVenda();
     },
     methods: {
-      async buscarCodLoja(){
-                
+      async uidLoja(){
+        this.uid = fb.auth.currentUser.uid;
+        const searchUidLoja = await fb.perfilCollection
+          .where("owner", "==", this.uid)
+          .get();
+        for (const doc of searchUidLoja.docs) {
+          this.uid = doc.data().alocado
+        }
       },
       async buscarProdutosVenda() {
-        this.uid = fb.auth.currentUser.uid;
         this.produtosVenda = [];
         const logProdutoVenda = await fb.produtosCollection
           .where("uid", "==", this.uid)
@@ -440,7 +448,6 @@
       },
       async criarComanda() {
         this.dialogVenda = false
-        this.uid = fb.auth.currentUser.uid;
         const produtosDocsCollecion = await fb.produtosCollection
           .where("uid", "==", this.uid)
           .get();
@@ -527,7 +534,6 @@
         )
       },
       async addProdutoPedido(nome, preco) {
-        this.uid = fb.auth.currentUser.uid;
         const res = await fb.produtosComandaCollection.add({
           uid: this.uid,
           nome_produto_comanda: nome,
@@ -543,7 +549,6 @@
         this.comandaValidFunction();
       },
       async buscarProdutoComanda() {
-        this.uid = fb.auth.currentUser.uid;
         this.produtosComandas = [];
         const logProdutoComanda = await fb.produtosComandaCollection
           .where("uid", "==", this.uid)
@@ -585,7 +590,6 @@
       },
       async addCopoComanda() {
         this.dialogAddCopo = false
-        this.uid = fb.auth.currentUser.uid;
         const copoDocs = await fb.produtosCollection
           .where("uid", "==", this.uid)
           .where("classe", "==", "Copos")
@@ -616,7 +620,6 @@
         }
       },
       async buscarCoposAddComanda() {
-        this.uid = fb.auth.currentUser.uid;
         this.coposRadio = [];
         const logCopoRadio = await fb.produtosCollection
           .where("uid", "==", this.uid)
@@ -631,7 +634,6 @@
         }
       },
       async addValorCopo() {
-        this.uid = fb.auth.currentUser.uid;
         const logBuscaRadio = await fb.produtosCollection
           .where("uid", "==", this.uid)
           .where("produtoID", "==", this.radioGroupValue)
@@ -647,7 +649,6 @@
         this.valorCancelarCopo = 0
       },
       async buscarClassesAdicionais() {
-        this.uid = fb.auth.currentUser.uid;
         this.classesCopoVenda = []
         const logClass = await fb.classeCollection
           .where("uid", "==", this.uid)
@@ -662,7 +663,6 @@
   
       },
       async buscarAdicionais() {
-        this.uid = fb.auth.currentUser.uid;
         this.adicionais = []
         const logClassAd = await fb.produtosCollection
           .where("uid", "==", this.uid)
@@ -682,7 +682,6 @@
         this.buscarAdicionais();
       },
       async addAdicionalCopo(classe, nome, valor) {
-        this.uid = fb.auth.currentUser.uid;
         const res = await fb.adicionaisCopoCollection.add({
           uid: this.uid,
           nome_adicional_copo: nome,
@@ -700,7 +699,6 @@
   
       },
       async buscarAdicionaisCopo() {
-        this.uid = fb.auth.currentUser.uid;
         this.adicionaisCopo = []
         const logAdCopo = await fb.adicionaisCopoCollection
           .where("uid", "==", this.uid)
@@ -733,7 +731,6 @@
         this.comandaValidFunction();
       },
       async salvarCopoComanda() {
-        this.uid = fb.auth.currentUser.uid;
         const logPr = await fb.produtosCollection
           .where("uid", "==", this.uid)
           .where("produtoID", "==", this.radioGroupValue)
@@ -753,7 +750,6 @@
         this.buscarAdicionaisCopoComanda();
       },
       async buscarCoposComanda() {
-        this.uid = fb.auth.currentUser.uid;
         this.copos = []
         const logBsCopo = await fb.coposComandaCollection
           .where("uid", "==", this.uid)
@@ -769,7 +765,6 @@
         }
       },
       async buscarAdicionaisCopoComanda() {
-        this.uid = fb.auth.currentUser.uid;
         this.coposItems = []
         const logBsCopoAd = await fb.adicionaisCopoCollection
           .where("uid", "==", this.uid)
@@ -795,7 +790,6 @@
         this.infos.valorTotal -= valor
       },
       async salvarComanda() {
-        this.uid = fb.auth.currentUser.uid;
         const produtoDocs = await fb.produtosComandaCollection
           .where("uid", "==", this.uid)
           .where("ID_comanda_produto", "==", this.idComandaLog)
@@ -821,7 +815,6 @@
             if (this.descricaoComanda == "") {
               this.descricaoComanda = "Nenhuma descrição definida"
             }
-            this.uid = fb.auth.currentUser.uid;
             await fb.comandasCollection.doc(this.idComandaLog).update({
               uid: this.uid,
               nome_comanda: this.nomeComanda,
@@ -839,6 +832,12 @@
       },
       async buscarComandas() {
         this.uid = fb.auth.currentUser.uid;
+        const searchUidLoja = await fb.perfilCollection
+          .where("owner", "==", this.uid)
+          .get();
+        for (const doc of searchUidLoja.docs) {
+          this.uid = doc.data().alocado
+        }
         this.comandas = []
         const logComanda = await fb.comandasCollection
           .where("uid", "==", this.uid)
@@ -855,7 +854,6 @@
         }
       },
       async editarComanda(idcomanda){
-        this.uid = fb.auth.currentUser.uid;
         this.texttitle = "Edição da comanda"
         this.editComanda = false
         this.textbtn = "Salvar"
@@ -883,7 +881,6 @@
         this.descontoValid = true
       },
       async concluirVenda(){
-        this.uid = fb.auth.currentUser.uid;
         const produtoDocs = await fb.produtosComandaCollection
           .where("uid", "==", this.uid)
           .where("ID_comanda_produto", "==", this.idComandaLog)
@@ -909,7 +906,6 @@
             if (this.descricaoComanda == "") {
               this.descricaoComanda = "Nenhuma descrição definida"
             }
-            this.uid = fb.auth.currentUser.uid;
             await fb.comandasCollection.doc(this.idComandaLog).update({
               uid: this.uid,
               nome_comanda: this.nomeComanda,
