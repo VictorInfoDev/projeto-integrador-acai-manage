@@ -812,6 +812,7 @@ export default {
           this.snackbarInvalidVenda = true
         }
         else {
+          this.uidBuscaInfo = fb.auth.currentUser.uid;
           this.comandaValid = false
           var numberDesconto = parseFloat(this.valorDesconto)
           if (this.descricaoComanda == "") {
@@ -826,6 +827,7 @@ export default {
             prioridade: this.comandaPrioridade,
             desconto: numberDesconto,
             estado: "comanda",
+            nome_user: "Administrador"
           });
           this.dialogVenda = false
           this.buscarComandas();

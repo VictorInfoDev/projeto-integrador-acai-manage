@@ -1,7 +1,7 @@
 <template>
     <v-app :style="{ 'background-image': 'url()' }">
       <div class="pa-5">
-        <v-icon large color="success" class="mb-2">mdi-store</v-icon><span class="ml-3 text-h5 success--text">Açaí Victor</span>
+        <v-icon large color="success" class="mb-2">mdi-store</v-icon><span class="ml-3 text-h5 success--text">{{ nomeLojaAlocado }}</span>
         <v-divider class="mt-2"></v-divider>
         <div style="border-left-style:solid;border-left-color:#4CAF50;border-left-width:8px;padding-left:10px;"
           class="text-h4 my-8">Olá funcionário, gerencie suas comandas aqui!</div>
@@ -414,7 +414,8 @@
         coposRadio: [],
         copos: [],
         coposItems: [],
-        comandas: []
+        comandas: [],
+        nomeLojaAlocado: "",
       }
     },
     mounted() {
@@ -430,6 +431,12 @@
           .get();
         for (const doc of searchUidLoja.docs) {
           this.uid = doc.data().alocado
+        }
+        const logNomeLoja = await fb.perfilCollection
+          .where("owner", "==", this.uid)
+          .get();
+        for (const doc of logNomeLoja.docs) {
+          this.nomeLojaAlocado = doc.data().nome
         }
       },
       async buscarProdutosVenda() {
@@ -730,7 +737,7 @@
         this.idCopoComandaLog = ""
         this.comandaValidFunction();
       },
-      async salvarCopoComanda() {
+      async salvarCopoComanda() {        
         const logPr = await fb.produtosCollection
           .where("uid", "==", this.uid)
           .where("produtoID", "==", this.radioGroupValue)
@@ -741,7 +748,7 @@
         await fb.coposComandaCollection.doc(this.idCopoComandaLog).update({
           nome_copo_comanda: nomeCopo,
           tipo_copo_comanda: this.copoComplemento,
-          valor_copo_comanda: this.valorCopoComanda
+          valor_copo_comanda: this.valorCopoComanda,
         });
         this.infos.valorTotal += this.valorCopoComanda
         this.dialogAddCopo = false
@@ -810,6 +817,13 @@
             this.snackbarInvalidVenda = true
           }
           else {
+            this.uidBuscaInfo = fb.auth.currentUser.uid;
+              const logInfos = await fb.perfilCollection
+              .where("owner","==",this.uidBuscaInfo)
+              .get();
+              for (const doc of logInfos.docs) {
+                var nomeFunc = doc.data().nome
+              }
             this.comandaValid = false
             var numberDesconto = parseFloat(this.valorDesconto)
             if (this.descricaoComanda == "") {
@@ -823,6 +837,7 @@
               prioridade: this.comandaPrioridade,
               desconto: numberDesconto,
               estado: "comanda",
+              nome_user: nomeFunc
             });
             this.dialogVenda = false
             this.buscarComandas();

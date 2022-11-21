@@ -582,6 +582,7 @@ export default {
         { text: "Data", value: "data", sortable: false},
         { text: "Horário", value: "hora", sortable: false },
         { text: "Valor (R$)", value: "valor" },
+        { text: "Usuário", value: "user" },
         { text: "ID", value: "idvenda", sortable: false },
         { text: "", value: "iconTable", sortable: false },
         ],
@@ -839,7 +840,8 @@ export default {
             data: doc.data().data,
             valor: doc.data().valor_comanda,
             hora: doc.data().horario,
-            idvenda: doc.data().ID_comanda
+            idvenda: doc.data().ID_comanda,
+            user: doc.data().nome_user
           }),
           this.valorVendasTabela.push(doc.data().valor_comanda)
         }

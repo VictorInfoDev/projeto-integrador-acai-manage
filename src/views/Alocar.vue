@@ -56,7 +56,7 @@
     </v-app>
 </template>
 <script>
-  import * as fb from '@/plugins/firebase'
+import * as fb from '@/plugins/firebase'
 export default {
     data () {
       return {
