@@ -477,11 +477,26 @@
           </v-list-item-content>
           <v-list-item-action>
             <v-row class="pa-2">
-              <v-btn depressed small color="info">Perfil<v-icon color="white" right>mdi-open-in-new</v-icon></v-btn>
-              <v-btn class="ml-2" depressed small color="error"><v-icon color="white">mdi-account-remove</v-icon></v-btn>
+              <v-btn @click="dialogInfoUsers = false, dialogInfoFunc = true, buscarInfoFunc(funcionario.id)" depressed small color="info">Perfil<v-icon color="white" right>mdi-open-in-new</v-icon></v-btn>
+              <v-btn @click="confirmRemoveFunc(funcionario.id)" class="ml-2" depressed small color="error"><v-icon color="white">mdi-account-remove</v-icon></v-btn>
             </v-row>
           </v-list-item-action>
         </v-list-item>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialogInfoFunc" max-width="550">
+      <v-card v-for="infoFunc in infosFunc" :key="infoFunc.id">
+        <v-card-title class="primary white--text">
+          <v-icon color="white" class="mr-2">mdi-account-tie-outline</v-icon>
+          {{ infoFunc.nome }}
+          <v-spacer></v-spacer>
+          <v-icon @click="dialogInfoUsers = true, dialogInfoFunc = false" color="white" class="">mdi-arrow-left</v-icon>
+        </v-card-title>
+        <div class="pa-5">
+          <div class="text-h6 info--text">Total de vendas: <span class="grey--text">{{ infoFuncVendas }}</span></div>
+          <v-divider class="mt-3 mb-3"></v-divider>
+          <div class="text-h6 green--text">Total de vendas em dinheiro: <span class="grey--text">R$ {{ valorVendasDoFunc.toFixed(2) }}</span></div>
+        </div>
       </v-card>
     </v-dialog>
     <div class="">
@@ -520,6 +535,7 @@ export default {
         infoVendas: [],
         infoVendasProduto: [],
         infoVendasCopo: [],
+        infosFunc: [],
         anoFiltro: "",
         mesFiltro: null,
         itemsMesFiltro:['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
@@ -535,6 +551,7 @@ export default {
         dbDia: 0,
         dbMes: 0,
         dbAno: 0,
+        infoFuncVendas: 0,
         gradient: gradients[5],
         gradientDirection: 'top',
         gradients,
@@ -545,10 +562,13 @@ export default {
         valorVendasHoje:[],
         valorVendasTabela:[],
         valorVendasDaTabela: 0,
+        valorVendasDoFunc: 0,
+        valorVendasFunc: [],
         infos: [],
         Edits: [],
         accountsInv: [],
         funcionarios: [],
+        dialogInfoFunc: false,
         dialogInfo: false,
         emailRec: false,
         emailRec2: false,
@@ -582,7 +602,7 @@ export default {
         { text: "Data", value: "data", sortable: false},
         { text: "Horário", value: "hora", sortable: false },
         { text: "Valor (R$)", value: "valor" },
-        { text: "Usuário", value: "user" },
+        { text: "Usuário", value: "user", sortable: false },
         { text: "ID", value: "idvenda", sortable: false },
         { text: "", value: "iconTable", sortable: false },
         ],
@@ -620,6 +640,58 @@ export default {
     },
 
     methods: {
+      async buscarInfoFunc(funcID){
+        this.valorVendasDoFunc = 0
+        this.infoFuncVendas = 0
+        this.valorVendasFunc = []
+        this.infosFunc = []
+        const logInfoFunc = await fb.perfilCollection
+        .where("idPerfil","==", funcID)
+        .get();
+        for (const doc of logInfoFunc.docs) {
+          this.infosFunc.push({
+            nome: doc.data().nome,
+          })
+          this.nomeFunc = doc.data().nome
+        }
+
+        const logInfoFuncVendas = await fb.comandasCollection
+        .where("nome_user","==", this.nomeFunc)
+        .get();
+        for (const doc of logInfoFuncVendas.docs) {
+          this.valorVendasFunc.push(doc.data().valor_comanda)
+        }
+
+        var somaTabelaFunc = 0;
+            for(var i = 0; i < this.valorVendasFunc.length; i ++) {
+                somaTabelaFunc += this.valorVendasFunc[i];
+        }
+        this.valorVendasDoFunc = somaTabelaFunc
+        this.infoFuncVendas = this.valorVendasFunc.length
+      },
+      async confirmRemoveFunc(funcID){
+        Swal.fire({
+          title: 'Tem certeza que deseja remover este funcionário?',
+          text: "",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sim, deletar!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.removeFunc(funcID)
+          }
+        })
+      },
+      async removeFunc(funcID){
+        this.uid = fb.auth.currentUser.uid;
+        await fb.perfilCollection.doc(funcID).update({
+          conviteLoja: "",
+          alocado: "",
+        });
+        this.gerenciarUsers();
+      },
       async aceitarFunc(funcID){
         this.uid = fb.auth.currentUser.uid;
         await fb.perfilCollection.doc(funcID).update({
