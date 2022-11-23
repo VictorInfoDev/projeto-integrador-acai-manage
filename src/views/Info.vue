@@ -657,6 +657,7 @@ export default {
 
         const logInfoFuncVendas = await fb.comandasCollection
         .where("nome_user","==", this.nomeFunc)
+        .where("estado", "==", "vendido")
         .get();
         for (const doc of logInfoFuncVendas.docs) {
           this.valorVendasFunc.push(doc.data().valor_comanda)

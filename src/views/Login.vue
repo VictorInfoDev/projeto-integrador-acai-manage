@@ -214,7 +214,7 @@ export default {
       dialogRecSenha: false,
       alertEmailRec: false,
       infos:[{email:null}],
-      user:{email:'victoragostini2019@gmail.com',nome:null,password:'minhacasa2'},
+      user:{email:'victorhugoagostini777@gmail.com',nome:null,password:'minhacasa2'},
     }
   },
   watch: {

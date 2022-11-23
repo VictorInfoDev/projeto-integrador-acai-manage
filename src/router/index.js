@@ -68,6 +68,11 @@ const routes = [
       name: 'VendaFunc',
       component: () => import('../views/VendaFunc.vue')
     },
+    {
+      path: '/LembretesFunc',
+      name: 'LembretesFunc',
+      component: () => import('../views/LembretesFunc.vue')
+    },
   ]
 }
 ]
