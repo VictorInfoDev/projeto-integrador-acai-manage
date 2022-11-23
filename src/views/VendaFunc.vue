@@ -1,7 +1,12 @@
 <template>
     <v-app :style="{ 'background-image': 'url()' }">
       <div class="pa-5">
-        <v-icon large color="success" class="mb-2">mdi-store</v-icon><span class="ml-3 text-h5 success--text">{{ nomeLojaAlocado }}</span>
+        <v-row class="pa-2">
+          <v-icon large color="success" class="mb-2">mdi-store</v-icon>
+          <span class="ml-3 text-h5 success--text">{{ nomeLojaAlocado }}</span>
+          <v-spacer></v-spacer>
+          <v-btn outlined to="/LembretesFunc"><v-icon left>mdi-clipboard-outline</v-icon> Lembretes</v-btn>
+        </v-row>
         <v-divider class="mt-2"></v-divider>
         <div style="border-left-style:solid;border-left-color:#4CAF50;border-left-width:8px;padding-left:10px;"
           class="text-h4 my-8">Olá funcionário, gerencie suas comandas aqui!</div>
