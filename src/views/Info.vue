@@ -440,7 +440,11 @@
     </v-dialog>
     <v-dialog v-model="dialogInfoUsers" max-width="550">
       <v-card class="pb-5">
-        <v-card-title class="info white--text"><v-icon color="white" class="mr-2">mdi-account</v-icon> Gerenciar funcionários</v-card-title>
+        <v-card-title class="info white--text"><v-icon color="white" class="mr-2">mdi-account</v-icon> 
+          Gerenciar funcionários
+          <v-spacer></v-spacer>
+          <v-icon color="white" @click="dialogInfoUsers = false">mdi-close</v-icon>
+        </v-card-title>
         <v-row class="ma-3 mb-0">
           <v-chip color=""><b>Código de loja:</b><span class="ml-1">{{ uid }}</span></v-chip>
           <v-chip @click="test()" class="ml-2">Copiar <v-icon small class="ml-1">mdi-content-copy</v-icon></v-chip>

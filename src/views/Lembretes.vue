@@ -14,13 +14,12 @@
           <v-card elevation="3" class="blue-grey lighten-4 rounded-lg">
             <v-card-title class="black--text blue-grey lighten-3 mb-3">{{ lembrete.nome }}</v-card-title>
             <v-card-text height="300px" class="black--text">{{ lembrete.descricao }}</v-card-text>
-
-            <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>
-                <v-icon left color="black">mdi-account-circle-outline</v-icon>{{ lembrete.destinatario }}
+              <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>De:
+                <v-icon class="ml-1" left color="black">mdi-account-circle-outline</v-icon>{{ lembrete.criador }}
               </v-chip>
 
-              <v-chip mall :ripple="false" link class="ma-1" color="black--text" outlined>
-                <v-icon left color="black">mdi-calendar-range</v-icon>{{ lembrete.data }}
+              <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>Para:
+                <v-icon class="ml-1" left color="black">mdi-account-circle-outline</v-icon>{{ lembrete.destinatario }}
               </v-chip>
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -53,8 +52,6 @@
         <v-card-title class="pa-5 grey darken-3">
           <v-icon color="white">mdi-text-box</v-icon>
           <span class="ml-2 white--text">Deixe seu lembrete</span>
-          <v-spacer></v-spacer>
-          <v-icon @click="dialogLembrete = false" color="white">mdi-close</v-icon>
         </v-card-title>
         <v-divider></v-divider>
 
@@ -81,11 +78,6 @@
 
           </v-card-actions>
         </v-form>
-        <v-card-subtitle>
-              <v-chip mall :ripple="false" link class="ma-1" color="" outlined>
-                <v-icon left color="">mdi-calendar-range</v-icon>{{ dataLembrete }}
-              </v-chip>
-            </v-card-subtitle>
       </v-card>
     </v-dialog>
   </v-app>
@@ -104,7 +96,7 @@ export default {
       valid: true,
       dialogLembrete: false,
       dialogConcluir: false,
-      items: ["Gerente", "Dono", "Vendedor(a)"],
+      items: [],
       lembretes: [],
       nomeLembrete: '',
       descricaoLembrete: '',
@@ -115,9 +107,19 @@ export default {
   },
   mounted() {
     this.buscarLembretes();
+    this.buscarUsersLembrete();
   },
   methods: {
-
+    async buscarUsersLembrete(){
+            this.uid = fb.auth.currentUser.uid;
+            this.items = ["Administrador"]
+            const logLembreteUsers = await fb.perfilCollection
+                .where("alocado", "==", this.uid)
+                .get();
+            for (const doc of logLembreteUsers.docs) {
+                this.items.push(doc.data().nome);
+            }
+    },
     async salvarLembretes() {
       this.uid = fb.auth.currentUser.uid;
       this.errors = [];
@@ -128,10 +130,23 @@ export default {
         this.errors.push('A idade é obrigatória.');
       }
       else{
+        const searchNome = await fb.perfilCollection
+          .where("owner", "==", this.uid)
+          .get();
+        for (const doc of searchNome.docs) {
+            this.nomeCriador = doc.data().admin
+            if(this.nomeCriador == true){
+              this.nomeCriador = "Administrador"
+            }
+            else{
+              this.nomeCriador == "Não identificado"
+            }
+        }
         const res = await fb.lembretesCollection.add({
           uid: this.uid,
           nome_lembrete: this.nomeLembrete,
           nome_destinatario: this.destinatarioLembrete,
+          nome_criador: this.nomeCriador,
           descricao: this.descricaoLembrete,
           data_lembrete: this.dataLembrete,
         });
@@ -162,6 +177,7 @@ export default {
         this.lembretes.push({
           nome: doc.data().nome_lembrete,
           destinatario: doc.data().nome_destinatario,
+          criador: doc.data().nome_criador,
           descricao: doc.data().descricao,
           data: doc.data().data_lembrete,
           id: doc.data().ID_lembrete

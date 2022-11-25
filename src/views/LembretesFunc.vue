@@ -22,13 +22,14 @@
               <v-card-title class="black--text blue-grey lighten-3 mb-3">{{ lembrete.nome }}</v-card-title>
               <v-card-text height="300px" class="black--text">{{ lembrete.descricao }}</v-card-text>
   
-              <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>
-                  <v-icon left color="black">mdi-account-circle-outline</v-icon>{{ lembrete.destinatario }}
+                <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>De:
+                  <v-icon left color="black" class="ml-1">mdi-account-circle-outline</v-icon>{{ lembrete.criador }}
+                </v-chip>
+
+                <v-chip mall :ripple="false" link class="ma-1" color="black--text white" outlined>Para:
+                  <v-icon left color="black" class="ml-1">mdi-account-circle-outline</v-icon>{{ lembrete.destinatario }}
                 </v-chip>
   
-                <v-chip mall :ripple="false" link class="ma-1" color="black--text" outlined>
-                  <v-icon left color="black">mdi-calendar-range</v-icon>{{ lembrete.data }}
-                </v-chip>
                 <v-card-actions>
                   <v-spacer></v-spacer>
                 <v-btn ripple="false" @click="dialogConcluir = !dialogConcluir, idLembreteEx = lembrete.id" icon color="" class="mr-3 pa-5">
@@ -60,8 +61,6 @@
           <v-card-title class="pa-5 grey darken-3">
             <v-icon color="white">mdi-text-box</v-icon>
             <span class="ml-2 white--text">Deixe seu lembrete</span>
-            <v-spacer></v-spacer>
-            <v-icon @click="dialogLembrete = false" color="white">mdi-close</v-icon>
           </v-card-title>
           <v-divider></v-divider>
   
@@ -88,11 +87,6 @@
   
             </v-card-actions>
           </v-form>
-          <v-card-subtitle>
-                <v-chip mall :ripple="false" link class="ma-1" color="" outlined>
-                  <v-icon left color="">mdi-calendar-range</v-icon>{{ dataLembrete }}
-                </v-chip>
-              </v-card-subtitle>
         </v-card>
       </v-dialog>
     </v-app>
@@ -128,7 +122,7 @@
     methods: {
         async buscarUsersLembrete(){
             this.uid = fb.auth.currentUser.uid;
-            this.items = ["Adiministrador"]
+            this.items = ["Administrador"]
             const searchUidLoja = await fb.perfilCollection
                 .where("owner", "==", this.uid)
                 .get();
@@ -166,20 +160,28 @@
             this.errors.push('A idade é obrigatória.');
             }
             else{
-            const res = await fb.lembretesCollection.add({
-                uid: this.uid,
-                nome_lembrete: this.nomeLembrete,
-                nome_destinatario: this.destinatarioLembrete,
-                descricao: this.descricaoLembrete,
-                data_lembrete: this.dataLembrete,
-            });
-            const idLembreteAdd = res.id;
-                await fb.lembretesCollection.doc(idLembreteAdd).update({
-                ID_lembrete: idLembreteAdd,
-            });
-            this.resetForm();
-            this.dialogLembrete = false
-            this.buscarLembretes();   
+              const uidUser = fb.auth.currentUser.uid;
+              const searchNome = await fb.perfilCollection
+                  .where("owner", "==", uidUser)
+                  .get();
+              for (const doc of searchNome.docs) {
+                  this.nomeCriador = doc.data().nome
+              }
+              const res = await fb.lembretesCollection.add({
+                  uid: this.uid,
+                  nome_lembrete: this.nomeLembrete,
+                  nome_destinatario: this.destinatarioLembrete,
+                  nome_criador: this.nomeCriador,
+                  descricao: this.descricaoLembrete,
+                  data_lembrete: this.dataLembrete,
+              });
+              const idLembreteAdd = res.id;
+                  await fb.lembretesCollection.doc(idLembreteAdd).update({
+                  ID_lembrete: idLembreteAdd,
+              });
+              this.resetForm();
+              this.dialogLembrete = false
+              this.buscarLembretes();   
             }
             
         },
@@ -206,6 +208,7 @@
                 this.lembretes.push({
                 nome: doc.data().nome_lembrete,
                 destinatario: doc.data().nome_destinatario,
+                criador: doc.data().nome_criador,
                 descricao: doc.data().descricao,
                 data: doc.data().data_lembrete,
                 id: doc.data().ID_lembrete
