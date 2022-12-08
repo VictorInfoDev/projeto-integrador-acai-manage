@@ -348,12 +348,25 @@ export default {
       }
       //firebase
       else {
+        if(this.tipoProduto == "Copos"){
+          this.tipoClasseProduto = "sim"
+        }
+        else{
         this.uid = fb.auth.currentUser.uid;
+        const logTasksAdd = await fb.classeCollection
+        .where("uid", "==", this.uid)
+        .where("classeSelect", "==", this.tipoProduto)
+        .get();
+        for (const doc of logTasksAdd.docs) {
+          this.tipoClasseProduto = doc.data().adicional
+        }
+        }
         const res = await fb.produtosCollection.add({
           uid: this.uid,
           produto: this.nomeProduto,
           valor: this.valorProduto,
           classe: this.tipoProduto,
+          tipo: this.tipoClasseProduto
         });
         const idprodutoAdd = res.id;
         await fb.produtosCollection.doc(idprodutoAdd).update({
