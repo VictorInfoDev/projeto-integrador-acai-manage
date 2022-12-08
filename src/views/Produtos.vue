@@ -18,6 +18,7 @@
       </div>
       <v-card class="mt-8" outlined>
         <div class="text-h2 primary--text pa-5">
+        Produtos
         </div>
         <v-divider></v-divider>
         <v-card-title>
