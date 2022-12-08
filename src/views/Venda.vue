@@ -424,7 +424,7 @@ export default {
       this.produtosVenda = [];
       const logProdutoVenda = await fb.produtosCollection
         .where("uid", "==", this.uid)
-        .where("classe", "==", "Produtos")
+        .where("adicional", "==", "nao")
         .get();
       for (const doc of logProdutoVenda.docs) {
         this.produtosVenda.push({
