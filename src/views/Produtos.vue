@@ -17,7 +17,8 @@
         </v-alert>
       </div>
       <v-card class="mt-8" outlined>
-        <div class="text-h2 primary--text pa-5">Produtos</div>
+        <div class="text-h2 primary--text pa-5">
+        </div>
         <v-divider></v-divider>
         <v-card-title>
           <div style="background-color: #bbdefb; border-radius: 15px" align="center">
@@ -454,7 +455,7 @@ export default {
     //methods classse buscar********************************************************************************************
     async buscarClass() {
       this.uid = fb.auth.currentUser.uid;
-      this.items = ["Copos", "Produtos"];
+      this.items = ["Copos"];
       const logTasks = await fb.classeCollection
         .where("uid", "==", this.uid)
         .get();
