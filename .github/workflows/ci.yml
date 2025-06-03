@@ -1,23 +1,19 @@
-name: CI - Build and Test
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout o código
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+
+      - name: Usar Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
       - name: Instalar dependências
         run: yarn install
 
-      - name: Rodar build
+      - name: Buildar projeto
         run: yarn build
 
       - name: Rodar testes
