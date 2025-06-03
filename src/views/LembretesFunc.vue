@@ -10,7 +10,7 @@
         <v-divider class="mt-2"></v-divider>
         <div style=" border-left-style: solid; border-left-color: gray; border-left-width: 8px; padding-left: 10px;" class="text-h4 my-8">Crie seus lembretes aqui!</div>
         <div style="color: gray" class="h5 mt-2 mb-4">
-          <v-alert outlined type="info" color="dark">Clique em <v-icon color="">mdi-card-plus-outline</v-icon> para criar seus lembretes.</v-alert>
+          <v-alert outlined type="info" color="dark">Clique <v-icon color="">mdi-card-plus-outline</v-icon> para criar seus lembretes.</v-alert>
         </div>
         <div class="text-h2 mt-10">Lembretes</div>
         <v-divider class="ma-5 ml-0"></v-divider>
