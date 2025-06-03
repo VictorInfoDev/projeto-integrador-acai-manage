@@ -14,24 +14,25 @@ jobs:
       - name: Checkout do repositório
         uses: actions/checkout@v2
 
-      - name: Configurar Node.js 16.13.0 (compatível com openssl-legacy)
+      - name: Setup Node.js 16.x
         uses: actions/setup-node@v3
         with:
-          node-version: 16.13.0
+          node-version: '16'
 
       - name: Instalar Yarn
         run: npm install -g yarn
 
-      - name: Remover package-lock.json (evita conflitos com Yarn)
+      - name: Remover arquivos de lock do NPM
         run: rm -f package-lock.json
 
       - name: Instalar dependências
         run: yarn install
 
-      - name: Buildar projeto
-        run: |
-          NODE_OPTIONS=--openssl-legacy-provider yarn build
+      - name: Lint
+        run: yarn lint
 
-      - name: Rodar testes
-        run: |
-          NODE_OPTIONS=--openssl-legacy-provider yarn test
+      - name: Buildar projeto
+        run: yarn build
+
+      - name: Rodar testes unitários
+        run: yarn test:unit
