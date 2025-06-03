@@ -14,10 +14,10 @@ jobs:
       - name: Checkout do repositório
         uses: actions/checkout@v2
 
-      - name: Configurar Node.js 16
+      - name: Configurar Node.js 16.13.0 (compatível com openssl-legacy)
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 16.13.0
 
       - name: Instalar Yarn
         run: npm install -g yarn
@@ -30,10 +30,8 @@ jobs:
 
       - name: Buildar projeto
         run: |
-          export NODE_OPTIONS=--openssl-legacy-provider
-          yarn build
+          NODE_OPTIONS=--openssl-legacy-provider yarn build
 
       - name: Rodar testes
         run: |
-          export NODE_OPTIONS=--openssl-legacy-provider
-          yarn test
+          NODE_OPTIONS=--openssl-legacy-provider yarn test
