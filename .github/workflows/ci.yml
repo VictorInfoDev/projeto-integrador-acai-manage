@@ -1,0 +1,24 @@
+name: CI - Build and Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout o código
+        uses: actions/checkout@v2
+
+      - name: Instalar dependências
+        run: yarn install
+
+      - name: Rodar build
+        run: yarn build
+
+      - name: Rodar testes
+        run: yarn test
