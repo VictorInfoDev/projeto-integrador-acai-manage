@@ -1,10 +1,6 @@
 name: CI - Build and Test
 
-on:
-  push:
-    branches: ["*"]
-  pull_request:
-    branches: ["*"]
+on: [push, pull_request]
 
 jobs:
   build-and-test:
@@ -19,11 +15,13 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Instalar Yarn (caso necessário)
-        run: npm install -g yarn
-
-      - name: Remover arquivos de lock do NPM se existirem
-        run: rm -f package-lock.json
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Instalar dependências
         run: yarn install
